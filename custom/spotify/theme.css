@@ -1,0 +1,61 @@
+/* ========================================================
+   SPOTIFY OLED BLACK + OTTIMIZZAZIONE GPU
+   ======================================================== */
+
+/* 1. Sfondo nero assoluto su tutte le variabili interne */
+:root {
+  --background-base: #000000 !important;
+  --background-highlight: #111111 !important;
+  --background-press: #000000 !important;
+  --background-elevated-base: #080808 !important;
+  --background-elevated-highlight: #161616 !important;
+}
+
+body, 
+.Root__top-container,
+.main-view-container__scroll-node-child,
+[data-testid="top-bar-back-button"] {
+  background-color: #000000 !important;
+}
+
+/* 2. Disattivazione filtri BLUR (eliminano frame buffer pesanti in VRAM) */
+* {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+/* 3. Player inferiore scuro e pulito */
+footer, [data-testid="now-playing-bar"] {
+  background-color: #050505 !important;
+  border-top: 1px solid #1a1a1a !important;
+}
+
+/* 4. Barra di navigazione laterale */
+nav, .Root__nav-bar {
+  background-color: #000000 !important;
+}
+
+/* 5. Rimozione canvas animati e sfondi dinamici degli album */
+.main-home-content, 
+.main-view-container__scroll-node-child > div:first-child {
+  background-image: none !important;
+}
+div[data-testid="now-playing-widget"] video,
+.main-view-container video,
+canvas {
+  display: none !important;
+}
+
+/* 6. Scrollbar scura e minimale */
+::-webkit-scrollbar {
+  width: 8px !important;
+}
+::-webkit-scrollbar-thumb {
+  background: #222222 !important;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #333333 !important;
+}
