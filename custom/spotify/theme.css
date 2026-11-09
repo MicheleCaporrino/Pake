@@ -81,3 +81,9 @@ html.pake-custom-theme ::-webkit-scrollbar-thumb {
 html.pake-custom-theme ::-webkit-scrollbar-thumb:hover {
   background: #1ed760 !important;
 }
+
+/* Virtualizzazione playlist: scarica dalla RAM grafica le righe fuori dallo schermo */
+div[role="row"], [data-testid="tracklist-row"] {
+  content-visibility: auto !important;
+  contain-intrinsic-size: 56px !important;
+}
