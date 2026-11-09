@@ -17,21 +17,22 @@ if (fs.existsSync(windowRsPath)) {
         "--disable-speech-api",
         "--renderer-process-limit=1",
         "--in-process-gpu",
-        "--js-flags=\"--max-old-space-size=128 --expose-gc --gc-global\"",
-        "--disk-cache-size=10485760" // Cache a 10MB
+        '--js-flags="--max-old-space-size=128 --expose-gc --gc-global"',
+        "--disk-cache-size=10485760"
     ].join(' ');
 
-    const optimized = `let mut windows_browser_args = String::from("${flags}");\n    window_builder = window_builder.devtools(true);`;
+    // Utilizziamo r#"..."# (Raw String di Rust) per incapsulare i doppi apici senza rompere il codice!
+    const optimized = `let mut windows_browser_args = String::from(r#"${flags}"#);\n    window_builder = window_builder.devtools(true);`;
 
     if (content.includes(target)) {
         content = content.replace(target, optimized);
         fs.writeFileSync(windowRsPath, content, 'utf8');
-        console.log("Ottimizzazioni ESTREME applicate!");
+        console.log("Ottimizzazioni ESTREME applicate con Raw String!");
     } else {
         const regex = /let\s+mut\s+windows_browser_args\s*=\s*String::from\("([^"]+)"\);/;
         if (regex.test(content)) {
             content = content.replace(regex, () => {
-                return `let mut windows_browser_args = String::from("${flags}");\n    window_builder = window_builder.devtools(true);`;
+                return `let mut windows_browser_args = String::from(r#"${flags}"#);\n    window_builder = window_builder.devtools(true);`;
             });
             fs.writeFileSync(windowRsPath, content, 'utf8');
             console.log("Ottimizzazioni ESTREME applicate via regex!");
