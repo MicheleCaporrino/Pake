@@ -1,61 +1,83 @@
 /* ========================================================
-   SPOTIFY OLED BLACK + OTTIMIZZAZIONE GPU
+   SPOTIFY MODERN DARK SLATE (ATTIVABILE / DISATTIVABILE)
    ======================================================== */
 
-/* 1. Sfondo nero assoluto su tutte le variabili interne */
-:root {
-  --background-base: #000000 !important;
-  --background-highlight: #111111 !important;
-  --background-press: #000000 !important;
-  --background-elevated-base: #080808 !important;
-  --background-elevated-highlight: #161616 !important;
+html.pake-custom-theme {
+  --background-base: #0c0e14 !important;
+  --background-highlight: #151824 !important;
+  --background-press: #11131c !important;
+  --background-elevated-base: #141724 !important;
+  --background-elevated-highlight: #1d2133 !important;
+  --text-base: #f3f4f8 !important;
+  --text-subdued: #8b92a5 !important;
+  --essential-positive: #1ed760 !important;
 }
 
-body, 
-.Root__top-container,
-.main-view-container__scroll-node-child,
-[data-testid="top-bar-back-button"] {
-  background-color: #000000 !important;
+/* Sfondo fluido principale */
+html.pake-custom-theme body, 
+html.pake-custom-theme .Root__top-container,
+html.pake-custom-theme .main-view-container,
+html.pake-custom-theme .main-view-container__scroll-node-child {
+  background-color: #0c0e14 !important;
 }
 
-/* 2. Disattivazione filtri BLUR (eliminano frame buffer pesanti in VRAM) */
-* {
+/* Sidebar elegante con bordo sottile 1px */
+html.pake-custom-theme nav, 
+html.pake-custom-theme .Root__nav-bar {
+  background-color: #090a0f !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Card arrotondate moderne */
+html.pake-custom-theme [data-testid="card-click-handler"],
+html.pake-custom-theme div[data-testid="grid-container"] > div {
+  border-radius: 12px !important;
+  background-color: #12141e !important;
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+  transition: transform 0.15s ease, background-color 0.15s ease !important;
+}
+
+html.pake-custom-theme [data-testid="card-click-handler"]:hover,
+html.pake-custom-theme div[data-testid="grid-container"] > div:hover {
+  background-color: #191c2b !important;
+  border-color: rgba(30, 215, 96, 0.3) !important;
+}
+
+/* Player inferiore scuro moderno */
+html.pake-custom-theme footer, 
+html.pake-custom-theme [data-testid="now-playing-bar"] {
+  background-color: #0d0f17 !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Cursore del volume e della traccia verde brillante */
+html.pake-custom-theme .playback-bar .progress-bar__slider,
+html.pake-custom-theme .volume-bar .progress-bar__slider {
+  background-color: #1ed760 !important;
+}
+
+/* Disattivazione filtri pesanti */
+html.pake-custom-theme * {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  box-shadow: none !important;
   text-shadow: none !important;
 }
 
-/* 3. Player inferiore scuro e pulito */
-footer, [data-testid="now-playing-bar"] {
-  background-color: #050505 !important;
-  border-top: 1px solid #1a1a1a !important;
-}
-
-/* 4. Barra di navigazione laterale */
-nav, .Root__nav-bar {
-  background-color: #000000 !important;
-}
-
-/* 5. Rimozione canvas animati e sfondi dinamici degli album */
-.main-home-content, 
-.main-view-container__scroll-node-child > div:first-child {
-  background-image: none !important;
-}
-div[data-testid="now-playing-widget"] video,
-.main-view-container video,
-canvas {
+/* Nascondi canvas animati e video in loop */
+html.pake-custom-theme div[data-testid="now-playing-widget"] video,
+html.pake-custom-theme .main-view-container video,
+html.pake-custom-theme canvas {
   display: none !important;
 }
 
-/* 6. Scrollbar scura e minimale */
-::-webkit-scrollbar {
-  width: 8px !important;
+/* Scrollbar minimale */
+html.pake-custom-theme ::-webkit-scrollbar {
+  width: 6px !important;
 }
-::-webkit-scrollbar-thumb {
-  background: #222222 !important;
-  border-radius: 4px;
+html.pake-custom-theme ::-webkit-scrollbar-thumb {
+  background: #232739 !important;
+  border-radius: 10px !important;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #333333 !important;
+html.pake-custom-theme ::-webkit-scrollbar-thumb:hover {
+  background: #1ed760 !important;
 }
