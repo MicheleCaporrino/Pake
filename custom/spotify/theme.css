@@ -1,88 +1,120 @@
 /* ========================================================
-   SPOTIFY MODERN DARK SLATE (ATTIVABILE / DISATTIVABILE)
+   SPOTIFY ULTRA-MODERN MINIMAL (Performance Edition)
    ======================================================== */
 
 html.pake-custom-theme {
-  --background-base: #0c0e14 !important;
-  --background-highlight: #151824 !important;
-  --background-press: #11131c !important;
-  --background-elevated-base: #141724 !important;
-  --background-elevated-highlight: #1d2133 !important;
-  --text-base: #f3f4f8 !important;
-  --text-subdued: #8b92a5 !important;
+  /* Palette: Nero profondo con accenti verde smeraldo e grigio titanio */
+  --background-base: #07080a !important;
+  --background-highlight: #12141a !important;
+  --background-press: #0e1015 !important;
+  --background-elevated-base: #0f1117 !important;
+  --background-elevated-highlight: #1a1d27 !important;
+  --text-base: #f0f1f5 !important;
+  --text-subdued: #888d9e !important;
   --essential-positive: #1ed760 !important;
+  --essential-warning: #ffa42b !important;
 }
 
-/* Sfondo fluido principale */
+/* 1. Sfondo fluido e pulito (Zero Gradienti) */
 html.pake-custom-theme body, 
 html.pake-custom-theme .Root__top-container,
 html.pake-custom-theme .main-view-container,
 html.pake-custom-theme .main-view-container__scroll-node-child {
-  background-color: #0c0e14 !important;
+  background-color: var(--background-base) !important;
+  background-image: none !important;
 }
 
-/* Sidebar elegante con bordo sottile 1px */
+/* 2. Sidebar sinistra (Minimal, senza sfondi, bordi invisibili) */
 html.pake-custom-theme nav, 
 html.pake-custom-theme .Root__nav-bar {
-  background-color: #090a0f !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+  background-color: #040507 !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.03) !important;
 }
 
-/* Card arrotondate moderne */
+/* Accentua le voci di menu attive nella sidebar */
+html.pake-custom-theme .Root__nav-bar li a.active {
+  background-color: rgba(30, 215, 96, 0.08) !important;
+  border-radius: 8px !important;
+  color: var(--essential-positive) !important;
+}
+
+/* 3. Card degli Album/Playlist (Effetto "Vetro Solido") */
 html.pake-custom-theme [data-testid="card-click-handler"],
 html.pake-custom-theme div[data-testid="grid-container"] > div {
   border-radius: 12px !important;
-  background-color: #12141e !important;
+  background-color: var(--background-elevated-base) !important;
   border: 1px solid rgba(255, 255, 255, 0.04) !important;
-  transition: transform 0.15s ease, background-color 0.15s ease !important;
+  transition: transform 0.2s cubic-bezier(0.3, 0, 0, 1), background-color 0.2s ease !important;
 }
 
+/* Hover delle card: sollevamento 3D senza usare ombre pesanti (usa transform) */
 html.pake-custom-theme [data-testid="card-click-handler"]:hover,
 html.pake-custom-theme div[data-testid="grid-container"] > div:hover {
-  background-color: #191c2b !important;
-  border-color: rgba(30, 215, 96, 0.3) !important;
+  background-color: var(--background-elevated-highlight) !important;
+  border-color: rgba(30, 215, 96, 0.4) !important;
+  transform: translateY(-4px) scale(1.01) !important;
 }
 
-/* Player inferiore scuro moderno */
+/* 4. Player Inferiore (Galleggiante e compatto) */
 html.pake-custom-theme footer, 
 html.pake-custom-theme [data-testid="now-playing-bar"] {
-  background-color: #0d0f17 !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+  background-color: rgba(10, 11, 15, 0.98) !important; /* Semitrasparente ma senza blur per non pesare sulla GPU */
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
-/* Cursore del volume e della traccia verde brillante */
+/* 5. Cursori (Volume e Traccia) - Stile Pillola Luminosa */
 html.pake-custom-theme .playback-bar .progress-bar__slider,
 html.pake-custom-theme .volume-bar .progress-bar__slider {
-  background-color: #1ed760 !important;
+  background-color: var(--essential-positive) !important;
+  height: 6px !important;
+  border-radius: 6px !important;
+}
+html.pake-custom-theme .progress-bar__bg {
+  background-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-/* Disattivazione filtri pesanti */
+/* 6. Pulsanti Play verdi (Più vibranti) */
+html.pake-custom-theme button[data-testid="play-button"] {
+  transform: scale(1.05) !important;
+  transition: transform 0.15s ease, filter 0.15s ease !important;
+}
+html.pake-custom-theme button[data-testid="play-button"]:hover {
+  transform: scale(1.1) !important;
+  filter: brightness(1.2) !important;
+}
+
+/* 7. PRESTAZIONI ESTREME: Niente filtri VRAM-killer */
 html.pake-custom-theme * {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+  box-shadow: none !important; 
   text-shadow: none !important;
 }
 
-/* Nascondi canvas animati e video in loop */
+/* Spegne i Canvas degli artisti (consumano il 30% della CPU/GPU) */
 html.pake-custom-theme div[data-testid="now-playing-widget"] video,
 html.pake-custom-theme .main-view-container video,
 html.pake-custom-theme canvas {
   display: none !important;
 }
 
-/* Scrollbar minimale */
+/* 8. Scrollbar invisibile e hi-tech */
 html.pake-custom-theme ::-webkit-scrollbar {
-  width: 6px !important;
+  width: 8px !important;
+}
+html.pake-custom-theme ::-webkit-scrollbar-track {
+  background: transparent !important;
 }
 html.pake-custom-theme ::-webkit-scrollbar-thumb {
-  background: #232739 !important;
+  background: rgba(255, 255, 255, 0.1) !important;
   border-radius: 10px !important;
+  border: 2px solid var(--background-base) !important; /* Crea un effetto padding interno */
 }
 html.pake-custom-theme ::-webkit-scrollbar-thumb:hover {
-  background: #1ed760 !important;
+  background: rgba(30, 215, 96, 0.6) !important;
 }
 
-/* Virtualizzazione playlist: scarica dalla RAM grafica le righe fuori dallo schermo */
+/* 9. Virtualizzazione delle liste (Distrugge dalla memoria grafica le righe fuori schermo) */
 div[role="row"], [data-testid="tracklist-row"] {
   content-visibility: auto !important;
   contain-intrinsic-size: 56px !important;

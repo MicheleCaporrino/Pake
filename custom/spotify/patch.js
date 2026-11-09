@@ -1,15 +1,5 @@
 (function () {
-    // 1. BLOCCO TELEMETRIA E TRACKER IN MEMORIA
-    const originalFetch = window.fetch;
-    window.fetch = function (input, init) {
-        const url = typeof input === 'string' ? input : (input && input.url ? input.url : '');
-        if (url.includes('/telemetry') || url.includes('/melody') || url.includes('log.spotify.com') || url.includes('analytics')) {
-            return Promise.resolve(new Response(JSON.stringify({ status: 200 })));
-        }
-        return originalFetch.apply(this, arguments);
-    };
-
-    // 2. FORZATURA GARBAGE COLLECTOR (SVUOTA-RAM)
+    // 1. FORZATURA GARBAGE COLLECTOR (PULIZIA RAM V8)
     function cleanRAM() {
         if (typeof window.gc === 'function') {
             try {
@@ -19,17 +9,17 @@
         }
     }
 
-    // Pulisci quando minimizzi la finestra, cambi applicazione o periodicamente
+    // Pulisci quando minimizzi la finestra, cambi applicazione o ogni 3 minuti
     window.addEventListener('blur', cleanRAM);
     document.addEventListener('visibilitychange', () => {
         if (document.hidden) cleanRAM();
     });
-    setInterval(cleanRAM, 180000); // Ogni 3 minuti
+    setInterval(cleanRAM, 180000);
 
-    // 3. Riconnessione automatica di rete
+    // 2. Riconnessione automatica
     window.addEventListener('online', () => window.location.reload());
 
-    // 4. Gestione Stato Tema (Attivo/Disattivo con memoria)
+    // 3. Gestione Stato Tema
     const THEME_KEY = 'pake_custom_theme_enabled';
     let isThemeEnabled = localStorage.getItem(THEME_KEY) !== 'false';
     function applyTheme() {
@@ -40,7 +30,7 @@
     document.addEventListener('DOMContentLoaded', applyTheme);
     setInterval(applyTheme, 2000);
 
-    // 5. Command Palette (CTRL + Q)
+    // 4. Command Palette (CTRL + Q)
     const palette = document.createElement('div');
     palette.id = 'pake-command-palette';
     palette.style.cssText = `
