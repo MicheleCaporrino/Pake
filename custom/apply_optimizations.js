@@ -1,34 +1,51 @@
 const fs = require('fs');
-const path = 'src-tauri/src/main.rs';
 
-if (fs.existsSync(path)) {
-    let content = fs.readFileSync(path, 'utf8');
-    
-    // Inietta i limiti RAM e processi per WebView2 (Chromium)
-    const optimization = `fn main() {
-    #[cfg(target_os = "windows")]
-    {
-        std::env::set_var(
-            "WEBVIEW2_ADDITIONAL_BROWSER_ARGS",
-            concat!(
-                "--renderer-process-limit=1 ",
-                "--in-process-gpu ",
-                "--js-flags=--max-old-space-size=256 ",
-                "--disable-features=CalculateNativeWinOcclusion,MediaRouter,OptimizationHints,Translate ",
-                "--disable-background-networking ",
-                "--disable-component-update ",
-                "--disable-domain-reliability ",
-                "--disk-cache-size=31457280"
-            ),
-        );
-    }
-`;
+const windowRsPath = 'src-tauri/src/app/window.rs';
 
-    if (!content.includes("WEBVIEW2_ADDITIONAL_BROWSER_ARGS")) {
-        content = content.replace('fn main() {', optimization);
-        fs.writeFileSync(path, content, 'utf8');
-        console.log("Ottimizzazioni globali WebView2 applicate con successo per la build!");
+if (fs.existsSync(windowRsPath)) {
+    let content = fs.readFileSync(windowRsPath, 'utf8');
+
+    // I flag da passare direttamente all'API WebView2 nativa di Tauri
+    const flags = [
+        "--renderer-process-limit=1",
+        "--in-process-gpu",
+        "--js-flags=--max-old-space-size=256",
+        "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection,CalculateNativeWinOcclusion,MediaRouter,OptimizationHints,Translate",
+        "--disable-background-networking",
+        "--disable-component-update",
+        "--disable-domain-reliability",
+        "--disk-cache-size=31457280"
+    ].join(' ');
+
+    const rustInjection = `
+        #[cfg(target_os = "windows")]
+        {
+            window_builder = window_builder.additional_browser_args("${flags}");
+        }
+    `;
+
+    // Cerchiamo il punto in cui Pake istanzia la finestra e iniettiamo i flag
+    if (!content.includes("additional_browser_args")) {
+        // Pake ha 'window_builder' definito in build_window_with_label
+        const target = 'let mut window_builder =';
+        
+        if (content.includes(target)) {
+            // Iniettiamo i flag appena dopo la dichiarazione del builder
+            const index = content.indexOf(target);
+            const semicolonIndex = content.indexOf(';', index);
+            
+            content = content.slice(0, semicolonIndex + 1) + 
+                      rustInjection + 
+                      content.slice(semicolonIndex + 1);
+
+            fs.writeFileSync(windowRsPath, content, 'utf8');
+            console.log("Ottimizzazioni native WebView2 iniettate con successo in window.rs!");
+        } else {
+            console.warn("Pattern window_builder non trovato in window.rs");
+        }
+    } else {
+        console.log("Ottimizzazioni gia presenti in window.rs");
     }
 } else {
-    console.warn("File main.rs non trovato, build standard.");
+    console.warn("File src-tauri/src/app/window.rs non trovato.");
 }
