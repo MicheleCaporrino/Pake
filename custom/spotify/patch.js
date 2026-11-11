@@ -1,5 +1,5 @@
 (function () {
-    // 1. GARBAGE COLLECTOR (SVUOTA-RAM V8)
+    // 1. GARBAGE COLLECTOR
     function cleanRAM() {
         if (typeof window.gc === 'function') {
             try { window.gc(); } catch (e) {}
@@ -10,114 +10,107 @@
     setInterval(cleanRAM, 180000);
     window.addEventListener('online', () => window.location.reload());
 
-    // 2. TEMA "CYBER-PILL / DYNAMIC ISLAND" (Design Spinto)
+    // 2. TEMA "CYBER-PILL" (Selettori HTML Semantici e Inattaccabili)
     const THEME_CSS = `
-        /* Palette Cyber-Minimal */
+        /* SFONDO GLOBALE NERO ASSOLUTO */
         html.pake-custom-theme, 
-        html.pake-custom-theme body {
-            --background-base: #030303 !important;
-            --background-highlight: #121212 !important;
-            --background-press: #1a1a1a !important;
-            --background-elevated-base: #0a0a0c !important;
-            --background-elevated-highlight: #1c1c1e !important;
-            --text-base: #ffffff !important;
-            --text-subdued: #a1a1aa !important;
-            --essential-positive: #1ed760 !important;
-        }
-
-        /* 1. Sfondo totale NERO ASSOLUTO e spaziatura maggiorata */
-        html.pake-custom-theme .Root__top-container {
+        html.pake-custom-theme body,
+        html.pake-custom-theme #main {
             background-color: #000000 !important;
-            padding: 16px 16px 0 16px !important;
-            gap: 16px !important;
+            background-image: none !important;
         }
 
-        /* 2. Pannelli iper-curvi (Stile iPadOS) */
-        html.pake-custom-theme .main-view-container, 
-        html.pake-custom-theme .Root__nav-bar,
-        html.pake-custom-theme .Root__right-sidebar {
+        /* 1. SGANCIAMENTO PANNELLI DAI BORDI (Forza il gap nel grid principale di Spotify) */
+        html.pake-custom-theme .Root__top-container,
+        html.pake-custom-theme [data-testid="root"] {
+            background-color: #000000 !important;
+            padding: 12px 12px 0 12px !important;
+            gap: 12px !important;
+        }
+
+        /* 2. STILE PANNELLI (Sinistra, Centro, Destra) */
+        html.pake-custom-theme nav, 
+        html.pake-custom-theme main, 
+        html.pake-custom-theme aside,
+        html.pake-custom-theme .main-view-container {
             background-color: #080808 !important;
-            border-radius: 24px !important;
-            border: 1px solid rgba(255, 255, 255, 0.04) !important;
-            overflow: hidden !important;
+            border-radius: 16px !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
         }
 
-        /* 3. PLAYER INFERIORE "DYNAMIC ISLAND" (Pillola Sospesa) */
-        html.pake-custom-theme .Root__now-playing-bar {
-            background-color: #000000 !important;
-        }
-        html.pake-custom-theme footer, 
+        /* 3. PLAYER "DYNAMIC ISLAND" (Pillola Flottante in basso) */
+        html.pake-custom-theme footer,
         html.pake-custom-theme [data-testid="now-playing-bar"] {
-            background: linear-gradient(180deg, #0f0f12 0%, #050505 100%) !important;
-            border: 1px solid rgba(30, 215, 96, 0.15) !important; /* Bordo verde sottile */
-            border-radius: 28px !important;
-            margin: 0 16px 16px 16px !important;
-            padding: 10px 24px !important;
-            width: calc(100% - 32px) !important;
-            box-sizing: border-box !important;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.9) !important;
+            background: linear-gradient(180deg, #111111 0%, #050505 100%) !important;
+            border: 1px solid rgba(30, 215, 96, 0.25) !important;
+            border-radius: 30px !important;
+            margin: 0 12px 12px 12px !important;
+            padding: 8px 24px !important;
+            width: auto !important; /* Annulla il 100% di default */
+            box-shadow: 0 20px 40px rgba(0,0,0,0.9) !important;
         }
 
-        /* 4. Barre di avanzamento con effetto NEON GLOW */
+        /* Nascondi sfondi e bordi originali del player */
+        html.pake-custom-theme footer > div {
+            background-color: transparent !important;
+            border: none !important;
+        }
+
+        /* 4. BARRE DI PROGRESSIONE CON NEON GLOW */
         html.pake-custom-theme .progress-bar__slider {
-            background-color: var(--essential-positive) !important;
+            background-color: #1ed760 !important;
             border-radius: 8px !important;
             height: 6px !important;
-            box-shadow: 0 0 10px rgba(30, 215, 96, 0.7) !important; /* Glow verde */
+            box-shadow: 0 0 12px rgba(30, 215, 96, 0.8) !important;
         }
         html.pake-custom-theme .progress-bar__bg {
-            background-color: rgba(255, 255, 255, 0.08) !important;
+            background-color: rgba(255, 255, 255, 0.1) !important;
         }
 
-        /* 5. Pulsante Play Levitante */
-        html.pake-custom-theme button[data-testid="play-button"] {
-            transform: scale(1.05) !important;
-            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        /* 5. HOVER CARD 3D (Senza ombre, usa transform) */
+        html.pake-custom-theme [data-testid="card-click-handler"],
+        html.pake-custom-theme div[data-testid="grid-container"] > div {
+            border-radius: 12px !important;
+            background: #111111 !important;
+            border: 1px solid rgba(255, 255, 255, 0.03) !important;
+            transition: transform 0.2s ease, border-color 0.2s ease !important;
         }
-        html.pake-custom-theme button[data-testid="play-button"]:hover {
-            transform: scale(1.15) !important;
-            filter: brightness(1.3) !important;
-            box-shadow: 0 5px 15px rgba(30, 215, 96, 0.4) !important;
-        }
-
-        /* 6. Hover Estremo sulle Card degli Album */
-        html.pake-custom-theme .main-view-container [data-testid="card-click-handler"],
-        html.pake-custom-theme .main-view-container div[data-testid="grid-container"] > div {
-            border-radius: 16px !important;
-            background: linear-gradient(145deg, #111111, #080808) !important;
-            border: 1px solid rgba(255, 255, 255, 0.02) !important;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.2s ease !important;
-        }
-        html.pake-custom-theme .main-view-container [data-testid="card-click-handler"]:hover,
-        html.pake-custom-theme .main-view-container div[data-testid="grid-container"] > div:hover {
-            transform: translateY(-8px) scale(1.03) !important;
-            border-color: rgba(30, 215, 96, 0.4) !important;
-            background: linear-gradient(145deg, #1a1a1a, #0a0a0a) !important;
+        html.pake-custom-theme [data-testid="card-click-handler"]:hover,
+        html.pake-custom-theme div[data-testid="grid-container"] > div:hover {
+            transform: translateY(-6px) scale(1.02) !important;
+            border-color: rgba(30, 215, 96, 0.5) !important;
+            background: #151515 !important;
         }
 
-        /* 7. Pulizia UI (Nascondi pulsanti di Upgrade e Installa App) */
-        html.pake-custom-theme [aria-label="Upgrade to Premium"],
-        html.pake-custom-theme [aria-label="Install App"],
-        html.pake-custom-theme button[aria-label="Upgrade to Premium"] {
+        /* 6. PULIZIA TOTALE INTERFACCIA (Via i pulsanti inutili) */
+        html.pake-custom-theme a[href*="download"],
+        html.pake-custom-theme a[href*="premium"],
+        html.pake-custom-theme button[aria-label*="Install"],
+        html.pake-custom-theme button[aria-label*="Upgrade"],
+        html.pake-custom-theme button[aria-label*="Aggiorna"],
+        html.pake-custom-theme [data-testid="upgrade-button"],
+        html.pake-custom-theme button[class*="upgrade"] {
             display: none !important;
         }
 
-        /* 8. Scrollbar e Prestazioni */
-        html.pake-custom-theme ::-webkit-scrollbar { width: 8px !important; }
-        html.pake-custom-theme ::-webkit-scrollbar-track { background: transparent !important; }
-        html.pake-custom-theme ::-webkit-scrollbar-thumb { 
-            background: rgba(255,255,255,0.1) !important; 
-            border-radius: 10px !important; 
-        }
-        html.pake-custom-theme ::-webkit-scrollbar-thumb:hover { background: rgba(30,215,96,0.4) !important; }
+        /* 7. PRESTAZIONI: STOP AL BLUR */
         html.pake-custom-theme * {
-            backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+            backdrop-filter: none !important; 
+            -webkit-backdrop-filter: none !important;
         }
         html.pake-custom-theme video, 
-        html.pake-custom-theme canvas,
-        html.pake-custom-theme [data-testid="now-playing-widget"] video {
+        html.pake-custom-theme canvas {
             display: none !important;
         }
+
+        /* 8. SCROLLBAR ELEGANTE */
+        html.pake-custom-theme ::-webkit-scrollbar { width: 6px !important; }
+        html.pake-custom-theme ::-webkit-scrollbar-track { background: transparent !important; }
+        html.pake-custom-theme ::-webkit-scrollbar-thumb { 
+            background: rgba(255,255,255,0.15) !important; 
+            border-radius: 10px !important; 
+        }
+        html.pake-custom-theme ::-webkit-scrollbar-thumb:hover { background: rgba(30,215,96,0.5) !important; }
     `;
 
     const styleEl = document.createElement('style');
@@ -138,21 +131,21 @@
         }
     }
     
-    setInterval(applyTheme, 1500); 
+    // Iniettiamo violentemente e ciclicamente per scavalcare React
+    setInterval(applyTheme, 1000); 
     applyTheme();
 
-    // 4. COMMAND PALETTE (CTRL + Q)
+    // 3. COMMAND PALETTE (CTRL + Q)
     const palette = document.createElement('div');
     palette.style.cssText = `
         position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
         background: rgba(0, 0, 0, 0.8); display: none;
         align-items: flex-start; justify-content: center;
         padding-top: 15vh; z-index: 2147483647; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        backdrop-filter: blur(8px); /* Solo la palette usa blur, è innocuo perché occasionale */
     `;
     const box = document.createElement('div');
     box.style.cssText = `
-        background: #050505; border: 1px solid rgba(30, 215, 96, 0.2);
+        background: #050505; border: 1px solid rgba(30, 215, 96, 0.3);
         border-radius: 20px; width: 490px; max-width: 90vw;
         box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9); overflow: hidden;
     `;
