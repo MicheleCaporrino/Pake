@@ -2,97 +2,113 @@
     // 1. GARBAGE COLLECTOR (SVUOTA-RAM V8)
     function cleanRAM() {
         if (typeof window.gc === 'function') {
-            try { window.gc(); console.log("GC eseguito"); } catch (e) {}
+            try { window.gc(); } catch (e) {}
         }
     }
     window.addEventListener('blur', cleanRAM);
     document.addEventListener('visibilitychange', () => { if (document.hidden) cleanRAM(); });
-    setInterval(cleanRAM, 120000); // Ogni 2 minuti invece che 3
+    setInterval(cleanRAM, 180000);
     window.addEventListener('online', () => window.location.reload());
 
-    // 2. TEMA ZINC MODERN (Look Premium macOS/Fluent)
+    // 2. TEMA ULTRA-MODERNO (Pannelli Flottanti e Sovrascrittura React Encore)
     const THEME_CSS = `
-        :root {
-          --background-base: #09090b !important;       /* Zinc 950 */
-          --background-highlight: #18181b !important;  /* Zinc 900 */
-          --background-press: #09090b !important;
-          --background-elevated-base: #18181b !important;
-          --background-elevated-highlight: #27272a !important; /* Zinc 800 */
-          --text-base: #f4f4f5 !important;
-          --text-subdued: #a1a1aa !important;
-          --essential-positive: #1ed760 !important;
-        }
-        
-        /* Sfondo e Contenitori Principali */
-        body, .Root__top-container, .main-view-container__scroll-node-child, [data-testid="top-bar-back-button"] {
-          background-color: var(--background-base) !important;
-          background-image: none !important;
-        }
-        nav, .Root__nav-bar { 
-          background-color: var(--background-base) !important; 
-          border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
-        }
-        
-        /* Player Inferiore (Bordo superiore sottile e colore elevato) */
-        footer, [data-testid="now-playing-bar"] {
-          background-color: var(--background-elevated-base) !important; 
-          border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+        /* Sovrascrittura profonda e spietata delle variabili React di Spotify */
+        html.pake-custom-theme, 
+        html.pake-custom-theme body, 
+        html.pake-custom-theme .encore-dark-theme,
+        html.pake-custom-theme [data-theme="dark"] {
+            --background-base: #09090b !important;
+            --background-highlight: #18181b !important;
+            --background-press: #27272a !important;
+            --background-elevated-base: #121215 !important;
+            --background-elevated-highlight: #27272a !important;
+            --background-tinted-base: #09090b !important;
+            --background-tinted-highlight: #18181b !important;
+            --background-tinted-press: #27272a !important;
+            --text-base: #f4f4f5 !important;
+            --text-subdued: #a1a1aa !important;
+            --essential-base: #1ed760 !important;
+            --essential-highlight: #22c55e !important;
+            --essential-positive: #1ed760 !important;
         }
 
-        /* Card (Playlists, Album) con Bordi Arrotondati 12px e Hover "Pop" */
-        [data-testid="card-click-handler"], div[data-testid="grid-container"] > div {
-          border-radius: 12px !important;
-          background-color: var(--background-elevated-base) !important;
-          border: 1px solid rgba(255,255,255,0.03) !important;
-          transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1) !important;
-        }
-        [data-testid="card-click-handler"]:hover, div[data-testid="grid-container"] > div:hover {
-          background-color: var(--background-elevated-highlight) !important;
-          border-color: rgba(30, 215, 96, 0.3) !important;
-          transform: translateY(-4px) !important; /* Sollevamento morbido */
-          box-shadow: 0 10px 20px rgba(0,0,0,0.5) !important;
+        /* STRUTTURA A PANNELLI FLOTTANTI (Stile macOS / iPadOS) */
+        html.pake-custom-theme .Root__top-container {
+            background-color: #000000 !important; /* Sfondo nero profondo dietro i pannelli */
+            padding: 10px 10px 0 10px !important;
+            gap: 10px !important;
         }
 
-        /* Pulsanti Play ultra-vibranti */
-        button[data-testid="play-button"] {
-          transition: transform 0.15s ease, filter 0.15s ease !important;
-        }
-        button[data-testid="play-button"]:hover {
-          transform: scale(1.08) !important;
-          filter: brightness(1.2) drop-shadow(0 0 10px rgba(30,215,96,0.4)) !important;
-        }
-
-        /* Cursori Volume e Avanzamento */
-        .progress-bar__slider {
-          background-color: var(--essential-positive) !important;
-          border-radius: 50% !important;
+        /* Sidebar, Vista Principale e Right Sidebar */
+        html.pake-custom-theme .main-view-container, 
+        html.pake-custom-theme .Root__nav-bar,
+        html.pake-custom-theme .Root__right-sidebar {
+            background-color: var(--background-base) !important;
+            border-radius: 16px !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            overflow: hidden !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
         }
 
-        /* Prestazioni: Blocca blur grafici */
-        * {
-          backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+        /* PLAYER INFERIORE FLOTTANTE (Stile Pillola) */
+        html.pake-custom-theme .Root__now-playing-bar {
+            background-color: #000000 !important;
         }
-        
-        /* Rimuovi sfondi animati pesanti */
-        .main-home-content, .main-view-container__scroll-node-child > div:first-child {
-          background-image: none !important;
-        }
-        div[data-testid="now-playing-widget"] video, .main-view-container video, canvas {
-          display: none !important;
+        html.pake-custom-theme footer, 
+        html.pake-custom-theme [data-testid="now-playing-bar"] {
+            background-color: #121215 !important;
+            border: 1px solid rgba(255, 255, 255, 0.06) !important;
+            border-radius: 16px !important;
+            margin: 0 10px 10px 10px !important;
+            padding: 8px 16px !important;
+            width: calc(100% - 20px) !important;
+            box-sizing: border-box !important;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6) !important;
         }
 
-        /* Scrollbar Minimalista Mac-style */
-        ::-webkit-scrollbar { width: 6px !important; }
-        ::-webkit-scrollbar-track { background: transparent !important; }
-        ::-webkit-scrollbar-thumb { 
-          background: rgba(255,255,255,0.15) !important; 
-          border-radius: 10px; 
+        /* HOVER DELLE CARD (Sollevamento 3D elegante senza blur/ombre pesanti) */
+        html.pake-custom-theme .main-view-container [data-testid="card-click-handler"],
+        html.pake-custom-theme .main-view-container div[data-testid="grid-container"] > div {
+            border-radius: 12px !important;
+            border: 1px solid transparent !important;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s ease, border-color 0.2s ease !important;
         }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3) !important; }
+        html.pake-custom-theme .main-view-container [data-testid="card-click-handler"]:hover,
+        html.pake-custom-theme .main-view-container div[data-testid="grid-container"] > div:hover {
+            transform: translateY(-6px) scale(1.02) !important;
+            background-color: var(--background-highlight) !important;
+            border-color: rgba(30, 215, 96, 0.3) !important;
+        }
 
-        /* VIRTUALIZZAZIONE DOM: Scarica le immagini e le righe dalla RAM quando scorri via */
-        div[role="row"], [data-testid="tracklist-row"], img {
-          content-visibility: auto !important;
+        /* Pulsanti e Cursori (Verde Neon e Arrotondati) */
+        html.pake-custom-theme .progress-bar__slider {
+            background-color: var(--essential-positive) !important;
+            border-radius: 8px !important;
+            height: 6px !important;
+        }
+        html.pake-custom-theme button[data-testid="play-button"]:hover {
+            transform: scale(1.1) !important;
+            filter: brightness(1.2) drop-shadow(0 0 12px rgba(30,215,96,0.3)) !important;
+        }
+
+        /* SCROLLBAR NATIVA INVISIBILE E MODERNA */
+        html.pake-custom-theme ::-webkit-scrollbar { width: 10px !important; }
+        html.pake-custom-theme ::-webkit-scrollbar-track { background: transparent !important; }
+        html.pake-custom-theme ::-webkit-scrollbar-thumb { 
+            background: rgba(255,255,255,0.1) !important; 
+            border-radius: 10px !important; 
+            border: 3px solid var(--background-base) !important;
+        }
+        html.pake-custom-theme ::-webkit-scrollbar-thumb:hover { background: rgba(30,215,96,0.4) !important; }
+
+        /* PRESTAZIONI ESTREME: Niente video pesanti e niente blur/ombre GPU-Killer */
+        html.pake-custom-theme * {
+            backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+        }
+        html.pake-custom-theme video, 
+        html.pake-custom-theme canvas,
+        html.pake-custom-theme [data-testid="now-playing-widget"] video {
+            display: none !important;
         }
     `;
 
@@ -105,12 +121,18 @@
 
     function applyTheme() {
         if (isThemeEnabled) {
+            document.documentElement.classList.add('pake-custom-theme');
             if (!document.head.contains(styleEl)) document.head.appendChild(styleEl);
         } else {
+            document.documentElement.classList.remove('pake-custom-theme');
             if (document.head.contains(styleEl)) styleEl.remove();
         }
     }
-    setInterval(applyTheme, 1500); // Riapplica se React sovrascrive
+    
+    // MutationObserver: se React prova a cancellare il nostro tema, lo rimettiamo all'istante
+    const observer = new MutationObserver(() => applyTheme());
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    setInterval(applyTheme, 1500); 
     applyTheme();
 
     // 3. COMMAND PALETTE (CTRL + Q)
@@ -139,7 +161,7 @@
                     <span>⚡ <b>Libera RAM (Forza GC)</b></span>
                 </div>
                 <div class="pake-item" data-action="toggle-theme" style="padding: 12px 16px; margin-bottom: 4px; border-radius: 8px; color: #f4f4f5; cursor: pointer; display: flex; justify-content: space-between;">
-                    <span>✨ <b>Tema Zinc Modern</b></span>
+                    <span>✨ <b>Tema Ultra-Moderno Flottante</b></span>
                     <span style="background: ${isThemeEnabled ? '#1ed760' : '#27272a'}; color: ${isThemeEnabled ? '#000' : '#a1a1aa'}; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800;">
                         ${isThemeEnabled ? 'ON' : 'OFF'}
                     </span>
