@@ -1,5 +1,15 @@
 (function () {
-    // 1. GARBAGE COLLECTOR (SVUOTA-RAM V8)
+    // 1. BLOCCO TELEMETRIA E TRACKER IN MEMORIA
+    const originalFetch = window.fetch;
+    window.fetch = function (input, init) {
+        const url = typeof input === 'string' ? input : (input && input.url ? input.url : '');
+        if (url.includes('/telemetry') || url.includes('/melody') || url.includes('log.spotify.com') || url.includes('analytics')) {
+            return Promise.resolve(new Response(JSON.stringify({ status: 200 })));
+        }
+        return originalFetch.apply(this, arguments);
+    };
+
+    // 2. GARBAGE COLLECTOR (SVUOTA-RAM V8)
     function cleanRAM() {
         if (typeof window.gc === 'function') {
             try { window.gc(); } catch (e) {}
@@ -10,9 +20,8 @@
     setInterval(cleanRAM, 180000);
     window.addEventListener('online', () => window.location.reload());
 
-    // 2. TEMA ULTRA-MODERNO (Pannelli Flottanti e Sovrascrittura React Encore)
+    // 3. TEMA ULTRA-MODERNO (Pannelli Flottanti)
     const THEME_CSS = `
-        /* Sovrascrittura profonda e spietata delle variabili React di Spotify */
         html.pake-custom-theme, 
         html.pake-custom-theme body, 
         html.pake-custom-theme .encore-dark-theme,
@@ -32,28 +41,25 @@
             --essential-positive: #1ed760 !important;
         }
 
-        /* STRUTTURA A PANNELLI FLOTTANTI (Stile macOS / iPadOS) */
         html.pake-custom-theme .Root__top-container {
-            background-color: #000000 !important; /* Sfondo nero profondo dietro i pannelli */
+            background-color: #000000 !important;
             padding: 10px 10px 0 10px !important;
             gap: 10px !important;
         }
 
-        /* Sidebar, Vista Principale e Right Sidebar */
         html.pake-custom-theme .main-view-container, 
         html.pake-custom-theme .Root__nav-bar,
         html.pake-custom-theme .Root__right-sidebar {
             background-color: var(--background-base) !important;
-            border-radius: 16px !important;
+            border-radius: 12px !important;
             border: 1px solid rgba(255, 255, 255, 0.05) !important;
             overflow: hidden !important;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
         }
 
-        /* PLAYER INFERIORE FLOTTANTE (Stile Pillola) */
         html.pake-custom-theme .Root__now-playing-bar {
             background-color: #000000 !important;
         }
+        
         html.pake-custom-theme footer, 
         html.pake-custom-theme [data-testid="now-playing-bar"] {
             background-color: #121215 !important;
@@ -63,45 +69,39 @@
             padding: 8px 16px !important;
             width: calc(100% - 20px) !important;
             box-sizing: border-box !important;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6) !important;
         }
 
-        /* HOVER DELLE CARD (Sollevamento 3D elegante senza blur/ombre pesanti) */
         html.pake-custom-theme .main-view-container [data-testid="card-click-handler"],
         html.pake-custom-theme .main-view-container div[data-testid="grid-container"] > div {
             border-radius: 12px !important;
             border: 1px solid transparent !important;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s ease, border-color 0.2s ease !important;
+            transition: transform 0.2s ease, background-color 0.2s ease !important;
         }
         html.pake-custom-theme .main-view-container [data-testid="card-click-handler"]:hover,
         html.pake-custom-theme .main-view-container div[data-testid="grid-container"] > div:hover {
-            transform: translateY(-6px) scale(1.02) !important;
+            transform: translateY(-4px) !important;
             background-color: var(--background-highlight) !important;
             border-color: rgba(30, 215, 96, 0.3) !important;
         }
 
-        /* Pulsanti e Cursori (Verde Neon e Arrotondati) */
         html.pake-custom-theme .progress-bar__slider {
             background-color: var(--essential-positive) !important;
             border-radius: 8px !important;
             height: 6px !important;
         }
         html.pake-custom-theme button[data-testid="play-button"]:hover {
-            transform: scale(1.1) !important;
-            filter: brightness(1.2) drop-shadow(0 0 12px rgba(30,215,96,0.3)) !important;
+            transform: scale(1.05) !important;
+            filter: brightness(1.2) !important;
         }
 
-        /* SCROLLBAR NATIVA INVISIBILE E MODERNA */
-        html.pake-custom-theme ::-webkit-scrollbar { width: 10px !important; }
+        html.pake-custom-theme ::-webkit-scrollbar { width: 8px !important; }
         html.pake-custom-theme ::-webkit-scrollbar-track { background: transparent !important; }
         html.pake-custom-theme ::-webkit-scrollbar-thumb { 
-            background: rgba(255,255,255,0.1) !important; 
+            background: rgba(255,255,255,0.15) !important; 
             border-radius: 10px !important; 
-            border: 3px solid var(--background-base) !important;
         }
         html.pake-custom-theme ::-webkit-scrollbar-thumb:hover { background: rgba(30,215,96,0.4) !important; }
 
-        /* PRESTAZIONI ESTREME: Niente video pesanti e niente blur/ombre GPU-Killer */
         html.pake-custom-theme * {
             backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
         }
@@ -120,22 +120,27 @@
     let isThemeEnabled = localStorage.getItem(THEME_KEY) !== 'false';
 
     function applyTheme() {
+        if (!document.documentElement) return;
+        
         if (isThemeEnabled) {
             document.documentElement.classList.add('pake-custom-theme');
-            if (!document.head.contains(styleEl)) document.head.appendChild(styleEl);
+            // CONTROLLO DI SICUREZZA SALVAVITA (Evita lo schermo bianco)
+            if (document.head && !document.head.contains(styleEl)) {
+                document.head.appendChild(styleEl);
+            }
         } else {
             document.documentElement.classList.remove('pake-custom-theme');
-            if (document.head.contains(styleEl)) styleEl.remove();
+            if (document.head && document.head.contains(styleEl)) {
+                styleEl.remove();
+            }
         }
     }
     
-    // MutationObserver: se React prova a cancellare il nostro tema, lo rimettiamo all'istante
-    const observer = new MutationObserver(() => applyTheme());
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    // Riprova ciclicamente per scavalcare React (molto più sicuro del MutationObserver)
     setInterval(applyTheme, 1500); 
     applyTheme();
 
-    // 3. COMMAND PALETTE (CTRL + Q)
+    // 4. COMMAND PALETTE (CTRL + Q)
     const palette = document.createElement('div');
     palette.style.cssText = `
         position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -177,6 +182,7 @@
     palette.appendChild(box);
 
     function togglePalette() {
+        if (!document.body) return; // Controllo di sicurezza
         if (!document.body.contains(palette)) document.body.appendChild(palette);
         const isOpen = palette.style.display === 'flex';
         if (!isOpen) updatePaletteHTML();
