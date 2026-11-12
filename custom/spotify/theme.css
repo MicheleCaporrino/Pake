@@ -1,177 +1,107 @@
-/* PAKE Spotify Revamp v4 — single-file stylesheet for Pake injection.
-   Keep modular source files alongside this bundle; regenerate by concatenating:
-   tokens.css + components.css + player.css + animations.css.
-*/
+/* PAKE Spotify v5 — single file. Attivo di default; si spegne con html.pake-off (impostato da patch). */
 
-/* PAKE Spotify Revamp v4 — design tokens */
-html.pake-custom-theme {
+/* Spia diagnostica: se NON vedi la barra verde in alto, il CSS non viene iniettato. */
+html:not(.pake-off) body::before {
+  content: ""; position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 2147483000;
+  background: linear-gradient(90deg, #1ed760, #7cf5a8, #1ed760); pointer-events: none;
+}
+
+/* Variabili native di Spotify (Encore): effetto globale, costo minimo */
+html:not(.pake-off),
+html:not(.pake-off) .encore-dark-theme,
+html:not(.pake-off) .encore-layout-themes,
+html:not(.pake-off) .encore-base-set {
   color-scheme: dark;
-  --pake-bg: #101114;
-  --pake-bg-sidebar: #0c0d10;
-  --pake-surface: #17191e;
-  --pake-surface-hover: #202329;
-  --pake-surface-raised: #1b1e24;
-  --pake-border: rgba(255,255,255,.075);
-  --pake-border-strong: rgba(255,255,255,.12);
-  --pake-text: #f5f6f7;
-  --pake-muted: #a0a4ad;
-  --pake-subtle: #777d88;
+  --background-base: #07080b;
+  --background-highlight: #12151c;
+  --background-press: #07080b;
+  --background-elevated-base: #161a23;
+  --background-elevated-highlight: #1e2330;
+  --background-tinted-base: rgba(255,255,255,.07);
+  --background-tinted-highlight: rgba(255,255,255,.12);
+  --essential-bright-accent: #1ed760;
+  --text-bright-accent: #1ed760;
   --pake-accent: #1ed760;
-  --pake-accent-soft: rgba(30,215,96,.13);
-  --pake-radius-sm: 8px;
-  --pake-radius-md: 12px;
-  --pake-radius-lg: 16px;
-  --pake-shadow: 0 12px 32px rgba(0,0,0,.22);
+  --pake-border: rgba(255,255,255,.09);
+  --pake-border-strong: rgba(255,255,255,.16);
   --pake-ease: cubic-bezier(.2,.75,.25,1);
-  --pake-fast: 140ms;
-  --pake-medium: 220ms;
 }
 
-
-/* PAKE Spotify Revamp v4 — app surfaces */
-html.pake-custom-theme,
-html.pake-custom-theme body {
-  background: var(--pake-bg) !important;
-  color: var(--pake-text);
-}
-html.pake-custom-theme body,
-html.pake-custom-theme .Root__top-container,
-html.pake-custom-theme .main-view-container,
-html.pake-custom-theme .main-view-container__scroll-node-child,
-html.pake-custom-theme .main-actionBarBackground,
-html.pake-custom-theme .main-home-homeHeader {
-  background-color: var(--pake-bg) !important;
-  background-image: none !important;
-}
-html.pake-custom-theme nav,
-html.pake-custom-theme .Root__nav-bar {
-  background: var(--pake-bg-sidebar) !important;
-  border-right: 1px solid var(--pake-border) !important;
-}
-html.pake-custom-theme .Root__nav-bar a,
-html.pake-custom-theme nav a {
-  border-radius: var(--pake-radius-sm) !important;
-  transition: color var(--pake-fast) ease, background-color var(--pake-fast) ease !important;
-}
-html.pake-custom-theme .Root__nav-bar a:hover,
-html.pake-custom-theme nav a:hover {
-  color: var(--pake-text) !important;
-  background: rgba(255,255,255,.055) !important;
-}
-html.pake-custom-theme .Root__nav-bar a[aria-current="page"],
-html.pake-custom-theme .Root__nav-bar li a.active {
-  color: var(--pake-text) !important;
-  background: rgba(255,255,255,.075) !important;
-  box-shadow: inset 2px 0 0 var(--pake-accent) !important;
-}
-html.pake-custom-theme [data-testid="grid-container"] > div {
-  background: var(--pake-surface) !important;
+/* Superfici principali */
+html:not(.pake-off), html:not(.pake-off) body { background: #07080b !important; }
+html:not(.pake-off) .Root__top-container { background: #07080b !important; gap: 10px; padding: 8px; }
+html:not(.pake-off) .Root__nav-bar,
+html:not(.pake-off) .Root__main-view,
+html:not(.pake-off) .Root__right-sidebar {
+  background: #0e1016 !important;
   border: 1px solid var(--pake-border) !important;
-  border-radius: var(--pake-radius-md) !important;
-  transition: background-color var(--pake-medium) var(--pake-ease),
-              border-color var(--pake-medium) ease !important;
+  border-radius: 16px !important;
+  overflow: hidden;
 }
-html.pake-custom-theme [data-testid="grid-container"] > div:hover {
-  background: var(--pake-surface-hover) !important;
-  border-color: var(--pake-border-strong) !important;
-}
-html.pake-custom-theme .main-view-container h1,
-html.pake-custom-theme .main-view-container h2 {
-  color: var(--pake-text) !important;
-}
-html.pake-custom-theme button:focus-visible,
-html.pake-custom-theme a:focus-visible,
-html.pake-custom-theme [role="button"]:focus-visible {
-  outline: 2px solid var(--pake-accent) !important;
-  outline-offset: 3px !important;
-}
-html.pake-custom-theme ::selection {
-  color: #07150b;
-  background: var(--pake-accent);
-}
-html.pake-custom-theme ::-webkit-scrollbar { width: 9px; height: 9px; }
-html.pake-custom-theme ::-webkit-scrollbar-track { background: transparent; }
-html.pake-custom-theme ::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,.15);
-  border: 2px solid transparent;
-  background-clip: padding-box;
-  border-radius: 20px;
-}
-html.pake-custom-theme ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255,255,255,.28);
-  border: 2px solid transparent;
-  background-clip: padding-box;
+html:not(.pake-off) .main-view-container,
+html:not(.pake-off) .main-view-container__scroll-node-child,
+html:not(.pake-off) .main-actionBarBackground,
+html:not(.pake-off) .main-home-homeHeader { background-image: none !important; background-color: transparent !important; }
+html:not(.pake-off) .Root__main-view {
+  background: radial-gradient(900px 420px at 50% -120px, rgba(30,215,96,.20), transparent 70%), #0e1016 !important;
 }
 
+/* Sidebar e navigazione */
+html:not(.pake-off) .Root__nav-bar a { border-radius: 10px !important; transition: background-color .14s ease, color .14s ease; }
+html:not(.pake-off) .Root__nav-bar a:hover { background: rgba(255,255,255,.07) !important; }
+html:not(.pake-off) .Root__nav-bar a[aria-current="page"] {
+  background: rgba(30,215,96,.12) !important; box-shadow: inset 3px 0 0 #1ed760;
+}
 
-/* PAKE Spotify Revamp v4 — now playing */
-html.pake-custom-theme [data-testid="now-playing-bar"] {
-  position: relative;
-  background: #15171b !important;
-  border: 1px solid var(--pake-border-strong) !important;
-  border-radius: var(--pake-radius-lg) !important;
-  margin: 0 10px 8px !important;
-  box-shadow: var(--pake-shadow);
+/* Card */
+html:not(.pake-off) [data-testid="grid-container"] > div,
+html:not(.pake-off) [data-testid="card"] {
+  background: #161a23 !important; border: 1px solid var(--pake-border) !important; border-radius: 14px !important;
+  transition: transform .22s var(--pake-ease), background-color .22s ease, border-color .22s ease, box-shadow .22s ease;
 }
-html.pake-custom-theme [data-testid="now-playing-bar"] img {
-  border-radius: var(--pake-radius-sm) !important;
+html:not(.pake-off) [data-testid="grid-container"] > div:hover,
+html:not(.pake-off) [data-testid="card"]:hover {
+  background: #1e2330 !important; border-color: rgba(30,215,96,.45) !important;
+  transform: translateY(-3px); box-shadow: 0 14px 34px rgba(0,0,0,.45), 0 0 0 1px rgba(30,215,96,.15);
 }
-html.pake-custom-theme [data-testid="now-playing-bar"] button {
-  transition: color var(--pake-fast) ease, background-color var(--pake-fast) ease,
-              transform var(--pake-fast) var(--pake-ease) !important;
+
+/* Player: flottante, vetro */
+html:not(.pake-off) .Root__now-playing-bar { background: transparent !important; padding: 0 8px 8px; }
+html:not(.pake-off) [data-testid="now-playing-bar"] {
+  background: rgba(22,26,35,.78) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(1.4); backdrop-filter: blur(24px) saturate(1.4);
+  border: 1px solid var(--pake-border-strong) !important; border-radius: 18px !important;
+  box-shadow: 0 16px 44px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06);
+  will-change: transform; contain: layout paint;
 }
-html.pake-custom-theme [data-testid="now-playing-bar"] button:hover {
-  transform: translateY(-1px);
-}
-html.pake-custom-theme [data-testid="playback-progressbar"],
-html.pake-custom-theme [data-testid="volume-bar"] {
-  border-radius: 999px !important;
-}
-html.pake-custom-theme [data-testid="playback-progressbar"] [role="slider"],
-html.pake-custom-theme [data-testid="volume-bar"] [role="slider"] {
-  border-radius: 999px !important;
-}
-html.pake-custom-theme [data-testid="now-playing-bar"] [data-testid="track"] {
-  color: var(--pake-text);
-}
-.pake-eq {
-  display: inline-flex;
-  align-items: flex-end;
-  gap: 2px;
-  height: 13px;
-  margin-right: 9px;
-  vertical-align: middle;
-}
-.pake-eq i {
-  display: block;
-  width: 2px;
-  height: 4px;
-  border-radius: 2px;
-  background: var(--pake-accent, #1ed760);
-  animation: pake-eq 850ms ease-in-out infinite alternate;
-}
+html:not(.pake-off) [data-testid="now-playing-bar"] img { border-radius: 10px !important; }
+html:not(.pake-off) [data-testid="now-playing-bar"] button { transition: transform .14s var(--pake-ease), color .14s ease; }
+html:not(.pake-off) [data-testid="now-playing-bar"] button:hover { transform: translateY(-1px) scale(1.06); }
+html:not(.pake-off) [data-testid="control-button-playpause"] { box-shadow: 0 0 18px rgba(30,215,96,.35); }
+
+/* Fluidità: layer GPU e scroll */
+html:not(.pake-off) .main-view-container__scroll-node-child,
+html:not(.pake-off) .Root__nav-bar { will-change: scroll-position; overscroll-behavior: contain; }
+html:not(.pake-off) .Root__nav-bar, html:not(.pake-off) .Root__right-sidebar { contain: layout paint; }
+
+/* Focus, selezione, scrollbar */
+html:not(.pake-off) :focus-visible { outline: 2px solid #1ed760 !important; outline-offset: 3px !important; }
+html:not(.pake-off) ::selection { color: #07150b; background: #1ed760; }
+html:not(.pake-off) ::-webkit-scrollbar { width: 9px; height: 9px; }
+html:not(.pake-off) ::-webkit-scrollbar-track { background: transparent; }
+html:not(.pake-off) ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.16); border: 2px solid transparent; background-clip: padding-box; border-radius: 20px; }
+html:not(.pake-off) ::-webkit-scrollbar-thumb:hover { background: rgba(30,215,96,.55); border: 2px solid transparent; background-clip: padding-box; }
+
+/* Equalizzatore */
+.pake-eq { display: inline-flex; align-items: flex-end; gap: 2px; height: 13px; margin-right: 9px; vertical-align: middle; }
+.pake-eq i { display: block; width: 2px; height: 4px; border-radius: 2px; background: #1ed760; animation: pake-eq 850ms ease-in-out infinite alternate; }
 .pake-eq i:nth-child(2) { animation-delay: 180ms; }
 .pake-eq i:nth-child(3) { animation-delay: 360ms; }
-@keyframes pake-eq {
-  from { height: 3px; }
-  to { height: 13px; }
-}
+@keyframes pake-eq { from { height: 3px; } to { height: 13px; } }
+html.pake-off .pake-eq { display: none; }
 
-
-/* PAKE Spotify Revamp v4 — restrained motion */
-html.pake-custom-theme [data-testid="grid-container"] > div,
-html.pake-custom-theme .Root__nav-bar a,
-html.pake-custom-theme nav a {
-  transition-duration: var(--pake-medium) !important;
-}
 @media (prefers-reduced-motion: reduce) {
-  html.pake-custom-theme *,
-  html.pake-custom-theme *::before,
-  html.pake-custom-theme *::after,
-  .pake-eq,
-  .pake-eq i {
-    animation: none !important;
-    transition-duration: .01ms !important;
-    scroll-behavior: auto !important;
+  html:not(.pake-off) *, html:not(.pake-off) *::before, html:not(.pake-off) *::after, .pake-eq i {
+    animation: none !important; transition-duration: .01ms !important; scroll-behavior: auto !important;
   }
 }

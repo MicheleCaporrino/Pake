@@ -23,8 +23,21 @@ on:
         description: "App name (lowercase for Linux)"
         required: true
       inject:
-        description: "Inject CSS/JS files (es: custom/spotify/patch.js,custom/spotify/theme.css)"
+        description: "Inject CSS/JS files, vuoto = nessun tema (es: custom/spotify/spotify-patch-v5.js,custom/spotify/spotify-theme-v5.css)"
         required: false
+      profile:
+        description: "lean = RAM minima (default upstream) | fluid = flag GPU, piu' risorse"
+        required: true
+        default: "lean"
+        type: choice
+        options:
+          - "lean"
+          - "fluid"
+      debug:
+        description: "Build con DevTools (--debug), solo per ispezionare i selettori"
+        required: false
+        type: boolean
+        default: false
       icon:
         description: "Icon URL, auto-fetch if empty"
         required: false
@@ -95,14 +108,17 @@ jobs:
       - name: Build CLI
         run: pnpm run cli:build
 
-      # --- INIEZIONE OTTIMIZZAZIONI GLOBALI WEBVIEW2 ---
-      - name: Inject Global WebView2 Optimizations
+      # --- POLICY WEBVIEW (profilo lean/fluid) + validazione file inject ---
+      - name: Apply WebView Profile
         shell: bash
+        env:
+          PAKE_PROFILE: ${{ inputs.profile }}
+          PAKE_INJECT: ${{ inputs.inject }}
         run: |
-          if [ ! -f "custom/tooling/apply-optimizations.js" ]; then
-            echo "::error::custom/tooling/apply-optimizations.js non trovato" && exit 1
+          if [ ! -f "custom/tooling/apply-optimizations.mjs" ]; then
+            echo "::error::custom/tooling/apply-optimizations.mjs non trovato" && exit 1
           fi
-          node custom/tooling/apply-optimizations.js
+          node custom/tooling/apply-optimizations.mjs
 
       - name: Setup mold linker
         if: runner.os == 'Linux'
@@ -127,8 +143,13 @@ jobs:
           INPUT_NEW_WINDOW: ${{ inputs.new_window }}
           INPUT_MULTI_ARCH: ${{ inputs.multi_arch }}
           INPUT_TARGETS: ${{ inputs.targets }}
+          INPUT_DEBUG: ${{ inputs.debug }}
         run: |
           ARGS=("$INPUT_URL" "--name" "$INPUT_NAME")
+
+          if [ "$INPUT_DEBUG" == "true" ]; then
+            ARGS+=("--debug")
+          fi
 
           if [ -n "$INPUT_ICON" ]; then
             ARGS+=("--icon" "$INPUT_ICON")
@@ -202,8 +223,13 @@ jobs:
           INPUT_NEW_WINDOW: ${{ inputs.new_window }}
           INPUT_MULTI_ARCH: ${{ inputs.multi_arch }}
           INPUT_TARGETS: ${{ inputs.targets }}
+          INPUT_DEBUG: ${{ inputs.debug }}
         run: |
           $args = $env:INPUT_URL, "--name", $env:INPUT_NAME
+
+          if ($env:INPUT_DEBUG -eq "true") {
+            $args += "--debug"
+          }
 
           if (-not [string]::IsNullOrEmpty($env:INPUT_ICON)) {
             $args += "--icon", $env:INPUT_ICON

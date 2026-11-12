@@ -1,114 +1,25 @@
-/* PAKE Spotify Revamp v4 — lightweight enhancements.
-   No forced GC, no periodic DOM polling, no interception of browser reload keys. */
+/* PAKE Spotify v5 — tema ON di default (il CSS funziona anche senza JS).
+   Tema OFF: nessun observer, nessun elemento extra, palette non montata. */
 (() => {
   "use strict";
+  const OFF_CLASS = "pake-off";
+  const KEY = "pake_theme_off";
+  const PALETTE_ID = "pake-palette-v5";
 
-  const ROOT_CLASS = "pake-custom-theme";
-  const THEME_KEY = "pake_custom_theme_enabled";
-  const PALETTE_ID = "pake-command-palette-v4";
-  const STYLE_ID = "pake-command-palette-style-v4";
+  let off = false;
+  try { off = localStorage.getItem(KEY) === "1"; } catch (_) {}
 
-  let themeEnabled = true;
-  try { themeEnabled = localStorage.getItem(THEME_KEY) !== "false"; } catch (_) {}
+  let bodyObserver = null;
+  let classObserver = null;
+  let raf = false;
 
-  const applyTheme = () => document.documentElement?.classList.toggle(ROOT_CLASS, themeEnabled);
-  applyTheme();
+  const applyClass = () => document.documentElement.classList.toggle(OFF_CLASS, off);
 
-  const style = document.createElement("style");
-  style.id = STYLE_ID;
-  style.textContent = `
-    #${PALETTE_ID}{position:fixed;inset:0;z-index:2147483647;display:none;align-items:flex-start;justify-content:center;padding:14vh 16px 20px;background:rgba(0,0,0,.62);font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-    #${PALETTE_ID}[data-open="true"]{display:flex}
-    #${PALETTE_ID} .pake-palette-box{width:min(520px,94vw);overflow:hidden;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:#17191e;box-shadow:0 24px 80px rgba(0,0,0,.5);color:#f5f6f7}
-    #${PALETTE_ID} .pake-palette-head{padding:17px 19px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;gap:12px}
-    #${PALETTE_ID} .pake-palette-title{font-weight:750;letter-spacing:.08em;color:#1ed760}
-    #${PALETTE_ID} .pake-palette-hint{font-size:11px;color:#969ba5}
-    #${PALETTE_ID} .pake-palette-action{display:flex;width:100%;align-items:center;justify-content:space-between;padding:13px 16px;border:0;border-radius:9px;background:transparent;color:inherit;text-align:left;cursor:pointer}
-    #${PALETTE_ID} .pake-palette-action:hover,#${PALETTE_ID} .pake-palette-action:focus-visible{background:rgba(255,255,255,.08);outline:none}
-    #${PALETTE_ID} .pake-palette-actions{padding:8px}
-  `;
-  (document.head || document.documentElement).appendChild(style);
-
-  function ensurePalette() {
-    if (document.getElementById(PALETTE_ID)) return document.getElementById(PALETTE_ID);
-    const overlay = document.createElement("div");
-    overlay.id = PALETTE_ID;
-    overlay.setAttribute("role", "dialog");
-    overlay.setAttribute("aria-modal", "true");
-    overlay.setAttribute("aria-label", "Spotify Commander");
-    const box = document.createElement("div");
-    box.className = "pake-palette-box";
-    const head = document.createElement("div");
-    head.className = "pake-palette-head";
-    const title = document.createElement("span");
-    title.className = "pake-palette-title";
-    title.textContent = "SPOTIFY COMMANDER";
-    const hint = document.createElement("span");
-    hint.className = "pake-palette-hint";
-    hint.textContent = "Ctrl/⌘ + Q · Esc";
-    head.append(title, hint);
-    const actions = document.createElement("div");
-    actions.className = "pake-palette-actions";
-    const themeButton = document.createElement("button");
-    themeButton.className = "pake-palette-action";
-    themeButton.type = "button";
-    themeButton.dataset.action = "theme";
-    const themeLabel = document.createElement("span");
-    themeLabel.textContent = "Appearance · Premium theme";
-    const themeState = document.createElement("span");
-    themeState.dataset.themeState = "true";
-    themeButton.append(themeLabel, themeState);
-    const reloadButton = document.createElement("button");
-    reloadButton.className = "pake-palette-action";
-    reloadButton.type = "button";
-    reloadButton.dataset.action = "reload";
-    reloadButton.textContent = "Reload Spotify";
-    actions.append(themeButton, reloadButton);
-    box.append(head, actions);
-    overlay.appendChild(box);
-    overlay.addEventListener("click", event => {
-      if (event.target === overlay) closePalette();
-    });
-    actions.addEventListener("click", event => {
-      const button = event.target.closest("button[data-action]");
-      if (!button) return;
-      if (button.dataset.action === "theme") {
-        themeEnabled = !themeEnabled;
-        try { localStorage.setItem(THEME_KEY, String(themeEnabled)); } catch (_) {}
-        applyTheme();
-        updateThemeLabel();
-      } else if (button.dataset.action === "reload") {
-        window.location.reload();
-      }
-    });
-    document.body.appendChild(overlay);
-    updateThemeLabel();
-    return overlay;
-  }
-
-  function updateThemeLabel() {
-    const state = document.querySelector(`#${PALETTE_ID} [data-theme-state]`);
-    if (state) state.textContent = themeEnabled ? "ON" : "OFF";
-  }
-  function openPalette() {
-    if (!document.body) return;
-    const palette = ensurePalette();
-    palette.dataset.open = "true";
-    palette.querySelector("button")?.focus();
-  }
-  function closePalette() {
-    const palette = document.getElementById(PALETTE_ID);
-    if (palette) {
-      delete palette.dataset.open;
-      palette.querySelector("button")?.blur();
-    }
-  }
-
-  function mountEqualizer() {
+  function mountEq() {
+    if (off) return;
     const player = document.querySelector('[data-testid="now-playing-bar"]');
-    if (!player || player.querySelector(".pake-eq")) return;
-    const track = player.querySelector('[data-testid="track"]');
-    if (!track) return;
+    const track = player && player.querySelector('[data-testid="track"]');
+    if (!track || track.querySelector(".pake-eq")) return;
     const eq = document.createElement("span");
     eq.className = "pake-eq";
     eq.setAttribute("aria-hidden", "true");
@@ -116,40 +27,89 @@
     track.insertBefore(eq, track.firstChild);
   }
 
-  let scheduled = false;
-  const observer = new MutationObserver(() => {
-    if (scheduled) return;
-    scheduled = true;
-    requestAnimationFrame(() => {
-      scheduled = false;
-      mountEqualizer();
+  function startObservers() {
+    stopObservers();
+    if (off || !document.body) return;
+    mountEq();
+    bodyObserver = new MutationObserver(() => {
+      if (raf) return;
+      raf = true;
+      requestAnimationFrame(() => { raf = false; mountEq(); });
     });
-  });
-  const startObserver = () => {
-    if (!document.body) return;
-    mountEqualizer();
-    observer.observe(document.body, { childList: true, subtree: true });
-  };
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", startObserver, { once: true });
-  } else {
-    startObserver();
+    bodyObserver.observe(document.body, { childList: true, subtree: true });
+    // Spotify può riscrivere class su <html>: ripristina solo se serve
+    classObserver = new MutationObserver(() => {
+      if (document.documentElement.classList.contains(OFF_CLASS) !== off) applyClass();
+    });
+    classObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
   }
 
-  window.addEventListener("keydown", event => {
-    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "q") {
-      event.preventDefault();
-      event.stopPropagation();
-      const palette = document.getElementById(PALETTE_ID);
-      if (palette?.dataset.open === "true") closePalette();
-      else openPalette();
-    } else if (event.key === "Escape") {
-      closePalette();
-    }
+  function stopObservers() {
+    if (bodyObserver) { bodyObserver.disconnect(); bodyObserver = null; }
+    if (classObserver) { classObserver.disconnect(); classObserver = null; }
+    document.querySelectorAll(".pake-eq").forEach(n => n.remove());
+  }
+
+  function setTheme(nextOff) {
+    off = nextOff;
+    try { localStorage.setItem(KEY, off ? "1" : "0"); } catch (_) {}
+    applyClass();
+    off ? stopObservers() : startObservers();
+    const s = document.querySelector(`#${PALETTE_ID} [data-state]`);
+    if (s) s.textContent = off ? "OFF" : "ON";
+  }
+
+  /* Palette creata solo alla prima apertura (zero costo prima) */
+  function ensurePalette() {
+    let o = document.getElementById(PALETTE_ID);
+    if (o) return o;
+    const st = document.createElement("style");
+    st.textContent = `
+      #${PALETTE_ID}{position:fixed;inset:0;z-index:2147483647;display:none;align-items:flex-start;justify-content:center;padding:14vh 16px 20px;background:rgba(0,0,0,.62);font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+      #${PALETTE_ID}[data-open="true"]{display:flex}
+      #${PALETTE_ID} .b{width:min(480px,94vw);border:1px solid rgba(255,255,255,.14);border-radius:16px;background:#161a23;color:#f5f6f7;box-shadow:0 24px 80px rgba(0,0,0,.5);overflow:hidden}
+      #${PALETTE_ID} .h{padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between}
+      #${PALETTE_ID} .h b{letter-spacing:.08em;color:#1ed760}
+      #${PALETTE_ID} .h span{font-size:11px;color:#969ba5}
+      #${PALETTE_ID} .a{padding:8px}
+      #${PALETTE_ID} button{display:flex;width:100%;justify-content:space-between;padding:13px 16px;border:0;border-radius:9px;background:transparent;color:inherit;cursor:pointer;font:inherit;text-align:left}
+      #${PALETTE_ID} button:hover,#${PALETTE_ID} button:focus-visible{background:rgba(255,255,255,.08);outline:none}`;
+    o = document.createElement("div");
+    o.id = PALETTE_ID;
+    o.setAttribute("role", "dialog");
+    o.setAttribute("aria-modal", "true");
+    o.innerHTML = `<div class="b"><div class="h"><b>SPOTIFY COMMANDER</b><span>Ctrl/⌘ + Shift + K · Esc</span></div>
+      <div class="a"><button data-act="theme"><span>Tema</span><span data-state>${off ? "OFF" : "ON"}</span></button>
+      <button data-act="reload"><span>Ricarica Spotify</span></button></div></div>`;
+    o.appendChild(st);
+    o.addEventListener("click", e => {
+      if (e.target === o) return closePalette();
+      const b = e.target.closest("button[data-act]");
+      if (!b) return;
+      if (b.dataset.act === "theme") setTheme(!off);
+      else location.reload();
+    });
+    document.body.appendChild(o);
+    return o;
+  }
+  function closePalette() {
+    const o = document.getElementById(PALETTE_ID);
+    if (o) delete o.dataset.open;
+  }
+
+  // Ctrl/Cmd+Q chiude l'app su molte piattaforme: uso Ctrl/Cmd+Shift+K
+  window.addEventListener("keydown", e => {
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === "k") {
+      e.preventDefault();
+      const o = ensurePalette();
+      if (o.dataset.open === "true") closePalette();
+      else { o.dataset.open = "true"; o.querySelector("button")?.focus(); }
+    } else if (e.key === "Escape") closePalette();
   }, true);
 
-  console.info("[PAKE v4] custom layer loaded", {
-    theme: themeEnabled ? "on" : "off",
-    playerFound: Boolean(document.querySelector('[data-testid="now-playing-bar"]'))
-  });
+  applyClass();
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", startObservers, { once: true });
+  else startObservers();
+
+  console.info("[PAKE v5] caricato", { theme: off ? "off" : "on" });
 })();
