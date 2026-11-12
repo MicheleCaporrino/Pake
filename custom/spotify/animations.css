@@ -1,0 +1,17 @@
+/* PAKE Spotify Revamp v4 — restrained motion */
+html.pake-custom-theme [data-testid="grid-container"] > div,
+html.pake-custom-theme .Root__nav-bar a,
+html.pake-custom-theme nav a {
+  transition-duration: var(--pake-medium) !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.pake-custom-theme *,
+  html.pake-custom-theme *::before,
+  html.pake-custom-theme *::after,
+  .pake-eq,
+  .pake-eq i {
+    animation: none !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

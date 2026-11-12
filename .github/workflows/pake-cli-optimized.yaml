@@ -99,10 +99,10 @@ jobs:
       - name: Inject Global WebView2 Optimizations
         shell: bash
         run: |
-          if [ ! -f "custom/apply-optimizations.js" ]; then
-            echo "::error::custom/apply-optimizations.js non trovato" && exit 1
+          if [ ! -f "custom/tooling/apply-optimizations.js" ]; then
+            echo "::error::custom/tooling/apply-optimizations.js non trovato" && exit 1
           fi
-          node custom/apply-optimizations.js
+          node custom/tooling/apply-optimizations.js
 
       - name: Setup mold linker
         if: runner.os == 'Linux'

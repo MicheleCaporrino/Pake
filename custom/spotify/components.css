@@ -1,0 +1,74 @@
+/* PAKE Spotify Revamp v4 — app surfaces */
+html.pake-custom-theme,
+html.pake-custom-theme body {
+  background: var(--pake-bg) !important;
+  color: var(--pake-text);
+}
+html.pake-custom-theme body,
+html.pake-custom-theme .Root__top-container,
+html.pake-custom-theme .main-view-container,
+html.pake-custom-theme .main-view-container__scroll-node-child,
+html.pake-custom-theme .main-actionBarBackground,
+html.pake-custom-theme .main-home-homeHeader {
+  background-color: var(--pake-bg) !important;
+  background-image: none !important;
+}
+html.pake-custom-theme nav,
+html.pake-custom-theme .Root__nav-bar {
+  background: var(--pake-bg-sidebar) !important;
+  border-right: 1px solid var(--pake-border) !important;
+}
+html.pake-custom-theme .Root__nav-bar a,
+html.pake-custom-theme nav a {
+  border-radius: var(--pake-radius-sm) !important;
+  transition: color var(--pake-fast) ease, background-color var(--pake-fast) ease !important;
+}
+html.pake-custom-theme .Root__nav-bar a:hover,
+html.pake-custom-theme nav a:hover {
+  color: var(--pake-text) !important;
+  background: rgba(255,255,255,.055) !important;
+}
+html.pake-custom-theme .Root__nav-bar a[aria-current="page"],
+html.pake-custom-theme .Root__nav-bar li a.active {
+  color: var(--pake-text) !important;
+  background: rgba(255,255,255,.075) !important;
+  box-shadow: inset 2px 0 0 var(--pake-accent) !important;
+}
+html.pake-custom-theme [data-testid="grid-container"] > div {
+  background: var(--pake-surface) !important;
+  border: 1px solid var(--pake-border) !important;
+  border-radius: var(--pake-radius-md) !important;
+  transition: background-color var(--pake-medium) var(--pake-ease),
+              border-color var(--pake-medium) ease !important;
+}
+html.pake-custom-theme [data-testid="grid-container"] > div:hover {
+  background: var(--pake-surface-hover) !important;
+  border-color: var(--pake-border-strong) !important;
+}
+html.pake-custom-theme .main-view-container h1,
+html.pake-custom-theme .main-view-container h2 {
+  color: var(--pake-text) !important;
+}
+html.pake-custom-theme button:focus-visible,
+html.pake-custom-theme a:focus-visible,
+html.pake-custom-theme [role="button"]:focus-visible {
+  outline: 2px solid var(--pake-accent) !important;
+  outline-offset: 3px !important;
+}
+html.pake-custom-theme ::selection {
+  color: #07150b;
+  background: var(--pake-accent);
+}
+html.pake-custom-theme ::-webkit-scrollbar { width: 9px; height: 9px; }
+html.pake-custom-theme ::-webkit-scrollbar-track { background: transparent; }
+html.pake-custom-theme ::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,.15);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  border-radius: 20px;
+}
+html.pake-custom-theme ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,.28);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}

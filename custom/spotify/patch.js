@@ -1,130 +1,155 @@
-(function () {
-    // 1. GARBAGE COLLECTOR (attivo su Windows: --expose-gc è nei flag WebView2)
-    function cleanRAM() {
-        if (typeof window.gc === 'function') {
-            try { window.gc(); } catch (e) {}
-        }
-    }
-    window.addEventListener('blur', cleanRAM);
-    document.addEventListener('visibilitychange', () => { if (document.hidden) cleanRAM(); });
-    setInterval(cleanRAM, 180000);
-    window.addEventListener('pagehide', cleanRAM);
+/* PAKE Spotify Revamp v4 — lightweight enhancements.
+   No forced GC, no periodic DOM polling, no interception of browser reload keys. */
+(() => {
+  "use strict";
 
-    function memMB() {
-        return (performance.memory && performance.memory.usedJSHeapSize)
-            ? Math.round(performance.memory.usedJSHeapSize / 1048576) + ' MB heap'
-            : 'heap n/d';
-    }
+  const ROOT_CLASS = "pake-custom-theme";
+  const THEME_KEY = "pake_custom_theme_enabled";
+  const PALETTE_ID = "pake-command-palette-v4";
+  const STYLE_ID = "pake-command-palette-style-v4";
 
-    // 1b. BOOT TOAST: diagnostica visiva (DevTools bloccato in release)
-    function bootToast(msg) {
-        const show = () => {
-            const t = document.createElement('div');
-            t.textContent = msg;
-            t.style.cssText = 'position:fixed;bottom:70px;right:16px;z-index:2147483647;background:#1ed760;color:#000;padding:10px 16px;border-radius:8px;font:700 13px -apple-system,"Segoe UI",sans-serif;transition:opacity .4s;pointer-events:none';
-            document.body.appendChild(t);
-            setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 500); }, 3500);
-        };
-        if (document.body) show(); else document.addEventListener('DOMContentLoaded', show, { once: true });
-    }
+  let themeEnabled = true;
+  try { themeEnabled = localStorage.getItem(THEME_KEY) !== "false"; } catch (_) {}
 
-    // 2. TEMA: toggle della classe su <html> — theme.css è l'unica fonte di stile
-    const THEME_KEY = 'pake_custom_theme_enabled';
-    let isThemeEnabled = localStorage.getItem(THEME_KEY) !== 'false';
+  const applyTheme = () => document.documentElement?.classList.toggle(ROOT_CLASS, themeEnabled);
+  applyTheme();
 
-    function applyTheme() {
-        if (!document.documentElement) return;
-        document.documentElement.classList.toggle('pake-custom-theme', isThemeEnabled);
-    }
-    applyTheme();
-    bootToast('PAKE patch.js OK · tema ' + (isThemeEnabled ? 'ON' : 'OFF') + ' · ' + memMB());
+  const style = document.createElement("style");
+  style.id = STYLE_ID;
+  style.textContent = `
+    #${PALETTE_ID}{position:fixed;inset:0;z-index:2147483647;display:none;align-items:flex-start;justify-content:center;padding:14vh 16px 20px;background:rgba(0,0,0,.62);font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    #${PALETTE_ID}[data-open="true"]{display:flex}
+    #${PALETTE_ID} .pake-palette-box{width:min(520px,94vw);overflow:hidden;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:#17191e;box-shadow:0 24px 80px rgba(0,0,0,.5);color:#f5f6f7}
+    #${PALETTE_ID} .pake-palette-head{padding:17px 19px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;gap:12px}
+    #${PALETTE_ID} .pake-palette-title{font-weight:750;letter-spacing:.08em;color:#1ed760}
+    #${PALETTE_ID} .pake-palette-hint{font-size:11px;color:#969ba5}
+    #${PALETTE_ID} .pake-palette-action{display:flex;width:100%;align-items:center;justify-content:space-between;padding:13px 16px;border:0;border-radius:9px;background:transparent;color:inherit;text-align:left;cursor:pointer}
+    #${PALETTE_ID} .pake-palette-action:hover,#${PALETTE_ID} .pake-palette-action:focus-visible{background:rgba(255,255,255,.08);outline:none}
+    #${PALETTE_ID} .pake-palette-actions{padding:8px}
+  `;
+  (document.head || document.documentElement).appendChild(style);
 
-    // 3. COMMAND PALETTE (Ctrl+Q / Cmd+Q)
-    const palette = document.createElement('div');
-    palette.style.cssText = `
-        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-        background: rgba(0, 0, 0, 0.7); display: none;
-        align-items: flex-start; justify-content: center;
-        padding-top: 15vh; z-index: 2147483647; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    `;
-    const box = document.createElement('div');
-    box.style.cssText = `
-        background: #121212; border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 16px; width: 490px; max-width: 90vw;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8); overflow: hidden;
-    `;
-
-    function updatePaletteHTML() {
-        box.innerHTML = `
-            <div style="padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;">
-                <span style="color: #1ed760; font-size: 14px; font-weight: 700; letter-spacing: 0.5px;">SPOTIFY COMMANDER</span>
-                <span style="color: #71717a; font-size: 11px;">${memMB()} · ESC per chiudere</span>
-            </div>
-            <div id="pake-palette-items" style="padding: 8px;">
-                <div class="pake-item" data-action="clean-ram" style="padding: 12px 16px; margin-bottom: 4px; border-radius: 8px; color: #f4f4f5; cursor: pointer; display: flex; justify-content: space-between;">
-                    <span>⚡ <b>Libera RAM (Forza GC)</b></span>
-                </div>
-                <div class="pake-item" data-action="toggle-theme" style="padding: 12px 16px; margin-bottom: 4px; border-radius: 8px; color: #f4f4f5; cursor: pointer; display: flex; justify-content: space-between;">
-                    <span>✨ <b>Tema Ultra-Modern</b></span>
-                    <span style="background: ${isThemeEnabled ? '#1ed760' : '#27272a'}; color: ${isThemeEnabled ? '#000' : '#a1a1aa'}; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800;">
-                        ${isThemeEnabled ? 'ON' : 'OFF'}
-                    </span>
-                </div>
-                <div class="pake-item" data-action="reload" style="padding: 12px 16px; border-radius: 8px; color: #f4f4f5; cursor: pointer; display: flex; justify-content: space-between;">
-                    <span>🔄 <b>Ricarica (F5)</b></span>
-                </div>
-            </div>
-        `;
-    }
-
-    updatePaletteHTML();
-    palette.appendChild(box);
-
-    function togglePalette() {
-        if (!document.body) return;
-        if (!document.body.contains(palette)) document.body.appendChild(palette);
-        const isOpen = palette.style.display === 'flex';
-        if (!isOpen) updatePaletteHTML();
-        palette.style.display = isOpen ? 'none' : 'flex';
-    }
-
-    palette.addEventListener('mouseover', (e) => {
-        const item = e.target.closest('.pake-item');
-        if (item) item.style.background = 'rgba(255,255,255,0.05)';
+  function ensurePalette() {
+    if (document.getElementById(PALETTE_ID)) return document.getElementById(PALETTE_ID);
+    const overlay = document.createElement("div");
+    overlay.id = PALETTE_ID;
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-label", "Spotify Commander");
+    const box = document.createElement("div");
+    box.className = "pake-palette-box";
+    const head = document.createElement("div");
+    head.className = "pake-palette-head";
+    const title = document.createElement("span");
+    title.className = "pake-palette-title";
+    title.textContent = "SPOTIFY COMMANDER";
+    const hint = document.createElement("span");
+    hint.className = "pake-palette-hint";
+    hint.textContent = "Ctrl/⌘ + Q · Esc";
+    head.append(title, hint);
+    const actions = document.createElement("div");
+    actions.className = "pake-palette-actions";
+    const themeButton = document.createElement("button");
+    themeButton.className = "pake-palette-action";
+    themeButton.type = "button";
+    themeButton.dataset.action = "theme";
+    const themeLabel = document.createElement("span");
+    themeLabel.textContent = "Appearance · Premium theme";
+    const themeState = document.createElement("span");
+    themeState.dataset.themeState = "true";
+    themeButton.append(themeLabel, themeState);
+    const reloadButton = document.createElement("button");
+    reloadButton.className = "pake-palette-action";
+    reloadButton.type = "button";
+    reloadButton.dataset.action = "reload";
+    reloadButton.textContent = "Reload Spotify";
+    actions.append(themeButton, reloadButton);
+    box.append(head, actions);
+    overlay.appendChild(box);
+    overlay.addEventListener("click", event => {
+      if (event.target === overlay) closePalette();
     });
-    palette.addEventListener('mouseout', (e) => {
-        const item = e.target.closest('.pake-item');
-        if (item) item.style.background = 'transparent';
+    actions.addEventListener("click", event => {
+      const button = event.target.closest("button[data-action]");
+      if (!button) return;
+      if (button.dataset.action === "theme") {
+        themeEnabled = !themeEnabled;
+        try { localStorage.setItem(THEME_KEY, String(themeEnabled)); } catch (_) {}
+        applyTheme();
+        updateThemeLabel();
+      } else if (button.dataset.action === "reload") {
+        window.location.reload();
+      }
     });
+    document.body.appendChild(overlay);
+    updateThemeLabel();
+    return overlay;
+  }
 
-    palette.addEventListener('click', (e) => {
-        if (e.target === palette) { palette.style.display = 'none'; return; }
-        const item = e.target.closest('.pake-item');
-        if (!item) return;
+  function updateThemeLabel() {
+    const state = document.querySelector(`#${PALETTE_ID} [data-theme-state]`);
+    if (state) state.textContent = themeEnabled ? "ON" : "OFF";
+  }
+  function openPalette() {
+    if (!document.body) return;
+    const palette = ensurePalette();
+    palette.dataset.open = "true";
+    palette.querySelector("button")?.focus();
+  }
+  function closePalette() {
+    const palette = document.getElementById(PALETTE_ID);
+    if (palette) {
+      delete palette.dataset.open;
+      palette.querySelector("button")?.blur();
+    }
+  }
 
-        const action = item.getAttribute('data-action');
-        if (action === 'clean-ram') {
-            cleanRAM();
-            bootToast('GC eseguito · ' + memMB());
-        } else if (action === 'toggle-theme') {
-            isThemeEnabled = !isThemeEnabled;
-            localStorage.setItem(THEME_KEY, isThemeEnabled);
-            applyTheme();
-            updatePaletteHTML();
-            return;
-        } else if (action === 'reload') {
-            window.location.reload();
-        }
-        palette.style.display = 'none';
+  function mountEqualizer() {
+    const player = document.querySelector('[data-testid="now-playing-bar"]');
+    if (!player || player.querySelector(".pake-eq")) return;
+    const track = player.querySelector('[data-testid="track"]');
+    if (!track) return;
+    const eq = document.createElement("span");
+    eq.className = "pake-eq";
+    eq.setAttribute("aria-hidden", "true");
+    for (let i = 0; i < 3; i++) eq.appendChild(document.createElement("i"));
+    track.insertBefore(eq, track.firstChild);
+  }
+
+  let scheduled = false;
+  const observer = new MutationObserver(() => {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(() => {
+      scheduled = false;
+      mountEqualizer();
     });
+  });
+  const startObserver = () => {
+    if (!document.body) return;
+    mountEqualizer();
+    observer.observe(document.body, { childList: true, subtree: true });
+  };
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", startObserver, { once: true });
+  } else {
+    startObserver();
+  }
 
-    window.addEventListener('keydown', (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'q') {
-            e.preventDefault(); e.stopPropagation(); togglePalette();
-        } else if (e.key === 'Escape' && palette.style.display === 'flex') {
-            palette.style.display = 'none';
-        } else if (e.key === 'F5' || (e.ctrlKey && e.key.toLowerCase() === 'r')) {
-            e.preventDefault(); window.location.reload();
-        }
-    }, true);
+  window.addEventListener("keydown", event => {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "q") {
+      event.preventDefault();
+      event.stopPropagation();
+      const palette = document.getElementById(PALETTE_ID);
+      if (palette?.dataset.open === "true") closePalette();
+      else openPalette();
+    } else if (event.key === "Escape") {
+      closePalette();
+    }
+  }, true);
+
+  console.info("[PAKE v4] custom layer loaded", {
+    theme: themeEnabled ? "on" : "off",
+    playerFound: Boolean(document.querySelector('[data-testid="now-playing-bar"]'))
+  });
 })();

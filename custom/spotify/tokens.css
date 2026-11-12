@@ -1,0 +1,23 @@
+/* PAKE Spotify Revamp v4 — design tokens */
+html.pake-custom-theme {
+  color-scheme: dark;
+  --pake-bg: #101114;
+  --pake-bg-sidebar: #0c0d10;
+  --pake-surface: #17191e;
+  --pake-surface-hover: #202329;
+  --pake-surface-raised: #1b1e24;
+  --pake-border: rgba(255,255,255,.075);
+  --pake-border-strong: rgba(255,255,255,.12);
+  --pake-text: #f5f6f7;
+  --pake-muted: #a0a4ad;
+  --pake-subtle: #777d88;
+  --pake-accent: #1ed760;
+  --pake-accent-soft: rgba(30,215,96,.13);
+  --pake-radius-sm: 8px;
+  --pake-radius-md: 12px;
+  --pake-radius-lg: 16px;
+  --pake-shadow: 0 12px 32px rgba(0,0,0,.22);
+  --pake-ease: cubic-bezier(.2,.75,.25,1);
+  --pake-fast: 140ms;
+  --pake-medium: 220ms;
+}
