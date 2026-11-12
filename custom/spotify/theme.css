@@ -115,7 +115,8 @@ html.pake-custom-theme ::-webkit-scrollbar-thumb:hover {
 }
 
 /* 9. Virtualizzazione delle liste (Distrugge dalla memoria grafica le righe fuori schermo) */
-div[role="row"], [data-testid="tracklist-row"] {
+html.pake-custom-theme div[role="row"],
+html.pake-custom-theme [data-testid="tracklist-row"] {
   content-visibility: auto !important;
   contain-intrinsic-size: 56px !important;
 }

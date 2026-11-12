@@ -23,7 +23,7 @@ on:
         description: "App name (lowercase for Linux)"
         required: true
       inject:
-        description: "Inject CSS/JS files (es: custom/spotify/theme.css,custom/spotify/patch.js)"
+        description: "Inject CSS/JS files (es: custom/spotify/patch.js,custom/spotify/theme.css)"
         required: false
       icon:
         description: "Icon URL, auto-fetch if empty"
@@ -99,9 +99,10 @@ jobs:
       - name: Inject Global WebView2 Optimizations
         shell: bash
         run: |
-          if [ -f "custom/apply-optimizations.js" ]; then
-            node custom/apply-optimizations.js
+          if [ ! -f "custom/apply-optimizations.js" ]; then
+            echo "::error::custom/apply-optimizations.js non trovato" && exit 1
           fi
+          node custom/apply-optimizations.js
 
       - name: Setup mold linker
         if: runner.os == 'Linux'
