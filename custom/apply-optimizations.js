@@ -6,22 +6,22 @@ if (fs.existsSync(windowRsPath)) {
     let content = fs.readFileSync(windowRsPath, 'utf8');
     const target = 'let mut windows_browser_args = String::from("--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection --disable-blink-features=AutomationControlled");';
 
-    // Flag RAM-MINIMA: meno processi, heap sotto controllo, GC esposto, occlusion-check ATTIVO
+    // Flag RAM-MINIMA (DRM-SAFE: niente --disable-plugins / --disable-component-update,
+    // Widevine CDM è un "plugin" aggiornato via component updater)
     const flags = [
         "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection,AudioServiceSandbox,BackForwardCache,MediaRouter,OptimizationHints,Translate,WinUseBrowserSpellChecker",
         "--disable-blink-features=AutomationControlled",
         "--disable-site-isolation-trials",
-        "--disable-extensions",
-        "--disable-plugins",
         "--disable-printing",
         "--disable-speech-api",
+        "--disable-sync",
         "--renderer-process-limit=1",
         "--in-process-gpu",
-        '--js-flags="--max-old-space-size=512 --expose-gc"',
-        "--disk-cache-size=67108864"
+        "--enable-low-end-device-mode",
+        '--js-flags="--max-old-space-size=384 --expose-gc"',
+        "--disk-cache-size=33554432"
     ].join(' ');
 
-    // Utilizziamo r#"..."# (Raw String di Rust) per incapsulare i doppi apici senza rompere il codice!
     const optimized = `let mut windows_browser_args = String::from(r#"${flags}"#);`;
 
     if (content.includes(target)) {

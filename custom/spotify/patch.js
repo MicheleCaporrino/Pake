@@ -8,6 +8,25 @@
     window.addEventListener('blur', cleanRAM);
     document.addEventListener('visibilitychange', () => { if (document.hidden) cleanRAM(); });
     setInterval(cleanRAM, 180000);
+    window.addEventListener('pagehide', cleanRAM);
+
+    function memMB() {
+        return (performance.memory && performance.memory.usedJSHeapSize)
+            ? Math.round(performance.memory.usedJSHeapSize / 1048576) + ' MB heap'
+            : 'heap n/d';
+    }
+
+    // 1b. BOOT TOAST: diagnostica visiva (DevTools bloccato in release)
+    function bootToast(msg) {
+        const show = () => {
+            const t = document.createElement('div');
+            t.textContent = msg;
+            t.style.cssText = 'position:fixed;bottom:70px;right:16px;z-index:2147483647;background:#1ed760;color:#000;padding:10px 16px;border-radius:8px;font:700 13px -apple-system,"Segoe UI",sans-serif;transition:opacity .4s;pointer-events:none';
+            document.body.appendChild(t);
+            setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 500); }, 3500);
+        };
+        if (document.body) show(); else document.addEventListener('DOMContentLoaded', show, { once: true });
+    }
 
     // 2. TEMA: toggle della classe su <html> — theme.css è l'unica fonte di stile
     const THEME_KEY = 'pake_custom_theme_enabled';
@@ -18,6 +37,7 @@
         document.documentElement.classList.toggle('pake-custom-theme', isThemeEnabled);
     }
     applyTheme();
+    bootToast('PAKE patch.js OK · tema ' + (isThemeEnabled ? 'ON' : 'OFF') + ' · ' + memMB());
 
     // 3. COMMAND PALETTE (Ctrl+Q / Cmd+Q)
     const palette = document.createElement('div');
@@ -38,7 +58,7 @@
         box.innerHTML = `
             <div style="padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;">
                 <span style="color: #1ed760; font-size: 14px; font-weight: 700; letter-spacing: 0.5px;">SPOTIFY COMMANDER</span>
-                <span style="color: #71717a; font-size: 11px;">ESC per chiudere</span>
+                <span style="color: #71717a; font-size: 11px;">${memMB()} · ESC per chiudere</span>
             </div>
             <div id="pake-palette-items" style="padding: 8px;">
                 <div class="pake-item" data-action="clean-ram" style="padding: 12px 16px; margin-bottom: 4px; border-radius: 8px; color: #f4f4f5; cursor: pointer; display: flex; justify-content: space-between;">
@@ -85,6 +105,7 @@
         const action = item.getAttribute('data-action');
         if (action === 'clean-ram') {
             cleanRAM();
+            bootToast('GC eseguito · ' + memMB());
         } else if (action === 'toggle-theme') {
             isThemeEnabled = !isThemeEnabled;
             localStorage.setItem(THEME_KEY, isThemeEnabled);

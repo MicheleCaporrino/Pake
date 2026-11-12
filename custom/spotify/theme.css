@@ -16,7 +16,7 @@ html.pake-custom-theme {
 }
 
 /* 1. Sfondo fluido e pulito (Zero Gradienti) */
-html.pake-custom-theme body, 
+html.pake-custom-theme body,
 html.pake-custom-theme .Root__top-container,
 html.pake-custom-theme .main-view-container,
 html.pake-custom-theme .main-view-container__scroll-node-child {
@@ -25,7 +25,7 @@ html.pake-custom-theme .main-view-container__scroll-node-child {
 }
 
 /* 2. Sidebar sinistra (Minimal, senza sfondi, bordi invisibili) */
-html.pake-custom-theme nav, 
+html.pake-custom-theme nav,
 html.pake-custom-theme .Root__nav-bar {
   background-color: #040507 !important;
   border-right: 1px solid rgba(255, 255, 255, 0.03) !important;
@@ -56,9 +56,9 @@ html.pake-custom-theme div[data-testid="grid-container"] > div:hover {
 }
 
 /* 4. Player Inferiore (Galleggiante e compatto) */
-html.pake-custom-theme footer, 
+html.pake-custom-theme footer,
 html.pake-custom-theme [data-testid="now-playing-bar"] {
-  background-color: rgba(10, 11, 15, 0.98) !important; /* Semitrasparente ma senza blur per non pesare sulla GPU */
+  background-color: rgba(10, 11, 15, 0.98) !important;
   border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
@@ -87,7 +87,7 @@ html.pake-custom-theme button[data-testid="play-button"]:hover {
 html.pake-custom-theme * {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  box-shadow: none !important; 
+  box-shadow: none !important;
   text-shadow: none !important;
 }
 
@@ -108,7 +108,7 @@ html.pake-custom-theme ::-webkit-scrollbar-track {
 html.pake-custom-theme ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.1) !important;
   border-radius: 10px !important;
-  border: 2px solid var(--background-base) !important; /* Crea un effetto padding interno */
+  border: 2px solid var(--background-base) !important;
 }
 html.pake-custom-theme ::-webkit-scrollbar-thumb:hover {
   background: rgba(30, 215, 96, 0.6) !important;
@@ -119,4 +119,37 @@ html.pake-custom-theme div[role="row"],
 html.pake-custom-theme [data-testid="tracklist-row"] {
   content-visibility: auto !important;
   contain-intrinsic-size: 56px !important;
+}
+
+/* 10. VARIABILI COMPLETE — senza queste menu, modali e pulsanti restano originali */
+html.pake-custom-theme {
+  --background-elevated-press: #14161d !important;
+  --background-tinted-base: #0c0e13 !important;
+  --background-tinted-highlight: #171a23 !important;
+  --background-tinted-press: #101319 !important;
+  --layer-base: #0a0b0f !important;
+  --layer-highlight: #151821 !important;
+  --essential-base: #1ed760 !important;
+  --essential-highlight: #3ce477 !important;
+  --essential-press: #12a244 !important;
+  --text-bright-accent: #1ed760 !important;
+  --decorative-base: #1ed760 !important;
+}
+
+/* 11. Topbar coerente col resto */
+html.pake-custom-theme .main-topBar-container,
+html.pake-custom-theme .Root__top-container header {
+  background-color: rgba(7, 8, 10, 0.92) !important;
+  backdrop-filter: none !important;
+}
+
+/* 12. Focus ring verde + radius uniforme (revamp percepibile) */
+html.pake-custom-theme button:focus-visible,
+html.pake-custom-theme a:focus-visible {
+  outline: 2px solid var(--essential-positive) !important;
+  outline-offset: 2px !important;
+}
+html.pake-custom-theme button,
+html.pake-custom-theme input {
+  border-radius: 10px !important;
 }
