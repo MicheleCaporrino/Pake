@@ -1,13 +1,13 @@
 import fs from 'fs';
 
+// --- 1. Flag RAM-MINIMA WebView2 (window.rs) ---
 const windowRsPath = 'src-tauri/src/app/window.rs';
 
 if (fs.existsSync(windowRsPath)) {
     let content = fs.readFileSync(windowRsPath, 'utf8');
     const target = 'let mut windows_browser_args = String::from("--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection --disable-blink-features=AutomationControlled");';
 
-    // Flag RAM-MINIMA (DRM-SAFE: niente --disable-plugins / --disable-component-update,
-    // Widevine CDM è un "plugin" aggiornato via component updater)
+    // DRM-SAFE: niente --disable-plugins / --disable-component-update (Widevine)
     const flags = [
         "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection,AudioServiceSandbox,BackForwardCache,MediaRouter,OptimizationHints,Translate,WinUseBrowserSpellChecker",
         "--disable-blink-features=AutomationControlled",
@@ -40,4 +40,25 @@ if (fs.existsSync(windowRsPath)) {
     }
 } else {
     console.log("WARN: src-tauri/src/app/window.rs non trovato — nessuna modifica applicata.");
+}
+
+// --- 2. DevTools in build release (Cargo.toml, feature tauri "devtools") ---
+const cargoPath = 'src-tauri/Cargo.toml';
+
+if (fs.existsSync(cargoPath)) {
+    let cargo = fs.readFileSync(cargoPath, 'utf8');
+    if (/"devtools",/.test(cargo)) {
+        console.log('Devtools già presente in Cargo.toml.');
+    } else {
+        const anchor = '"image-png",';
+        if (cargo.includes(anchor)) {
+            cargo = cargo.replace(anchor, '"image-png",\n  "devtools",');
+            fs.writeFileSync(cargoPath, cargo, 'utf8');
+            console.log('Devtools abilitato in Cargo.toml.');
+        } else {
+            console.log('WARN: anchor features tauri non trovato in Cargo.toml — devtools NON abilitato.');
+        }
+    }
+} else {
+    console.log('WARN: src-tauri/Cargo.toml non trovato.');
 }

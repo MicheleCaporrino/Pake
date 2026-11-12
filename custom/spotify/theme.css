@@ -1,155 +1,269 @@
 /* ========================================================
-   SPOTIFY ULTRA-MODERN MINIMAL (Performance Edition)
+   SPOTIFY AMOLED REVAMP — visibile, performante, DRM-safe
+   Cambia ACCENT per un colore diverso dal verde Spotify
    ======================================================== */
 
 html.pake-custom-theme {
-  /* Palette: Nero profondo con accenti verde smeraldo e grigio titanio */
-  --background-base: #07080a !important;
-  --background-highlight: #12141a !important;
-  --background-press: #0e1015 !important;
-  --background-elevated-base: #0f1117 !important;
-  --background-elevated-highlight: #1a1d27 !important;
-  --text-base: #f0f1f5 !important;
-  --text-subdued: #888d9e !important;
-  --essential-positive: #1ed760 !important;
-  --essential-warning: #ffa42b !important;
+  /* ====== ACCENT: cambia qui (es. #00d4ff cyan, #b57bff viola) ====== */
+  --pake-accent: #1ed760;
+
+  --background-base: #000000 !important;
+  --background-highlight: #0a0a0a !important;
+  --background-press: #111111 !important;
+  --background-elevated-base: #0d0d0d !important;
+  --background-elevated-highlight: #171717 !important;
+  --background-elevated-press: #14161d !important;
+  --background-tinted-base: #050505 !important;
+  --background-tinted-highlight: #101010 !important;
+  --background-tinted-press: #0b0b0b !important;
+  --layer-base: #080808 !important;
+  --layer-highlight: #131313 !important;
+  --text-base: #ffffff !important;
+  --text-subdued: #8f8f8f !important;
+  --essential-base: var(--pake-accent) !important;
+  --essential-positive: var(--pake-accent) !important;
+  --essential-highlight: var(--pake-accent) !important;
+  --essential-press: var(--pake-accent) !important;
+  --text-bright-accent: var(--pake-accent) !important;
+  --decorative-base: var(--pake-accent) !important;
 }
 
-/* 1. Sfondo fluido e pulito (Zero Gradienti) */
+/* 1. NERO PURO ovunque + kill dei gradienti dinamici per playlist */
 html.pake-custom-theme body,
 html.pake-custom-theme .Root__top-container,
 html.pake-custom-theme .main-view-container,
-html.pake-custom-theme .main-view-container__scroll-node-child {
-  background-color: var(--background-base) !important;
+html.pake-custom-theme .main-view-container__scroll-node-child,
+html.pake-custom-theme .main-actionBarBackground,
+html.pake-custom-theme .main-home-homeHeader,
+html.pake-custom-theme div[data-testid="playlist-page"] {
+  background-color: #000 !important;
   background-image: none !important;
+  box-shadow: inset 0 0 0 0 transparent !important;
 }
 
-/* 2. Sidebar sinistra (Minimal, senza sfondi, bordi invisibili) */
+/* 2. SIDEBAR: nero + voce attiva con barra accent (visibile!) */
 html.pake-custom-theme nav,
 html.pake-custom-theme .Root__nav-bar {
-  background-color: #040507 !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.03) !important;
+  background-color: #000 !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+html.pake-custom-theme .Root__nav-bar li a,
+html.pake-custom-theme .Root__nav-bar [data-testid="nav-item-link"] {
+  border-radius: 10px !important;
+}
+html.pake-custom-theme .Root__nav-bar li a.active,
+html.pake-custom-theme .Root__nav-bar [data-encore-id="listItem"]:has([aria-current="page"]) {
+  background-color: rgba(255, 255, 255, 0.07) !important;
+  color: var(--pake-accent) !important;
+  box-shadow: inset 3px 0 0 var(--pake-accent) !important;
 }
 
-/* Accentua le voci di menu attive nella sidebar */
-html.pake-custom-theme .Root__nav-bar li a.active {
-  background-color: rgba(30, 215, 96, 0.08) !important;
-  border-radius: 8px !important;
-  color: var(--essential-positive) !important;
-}
-
-/* 3. Card degli Album/Playlist (Effetto "Vetro Solido") */
+/* 3. CARD: bordo visibile + glow accent all'hover (il revamp si VEDE qui) */
 html.pake-custom-theme [data-testid="card-click-handler"],
 html.pake-custom-theme div[data-testid="grid-container"] > div {
-  border-radius: 12px !important;
-  background-color: var(--background-elevated-base) !important;
-  border: 1px solid rgba(255, 255, 255, 0.04) !important;
-  transition: transform 0.2s cubic-bezier(0.3, 0, 0, 1), background-color 0.2s ease !important;
+  border-radius: 14px !important;
+  background-color: #0d0d0d !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  transition: transform 0.18s cubic-bezier(0.3, 0, 0, 1), border-color 0.18s ease, background-color 0.18s ease !important;
 }
-
-/* Hover delle card: sollevamento 3D senza usare ombre pesanti (usa transform) */
 html.pake-custom-theme [data-testid="card-click-handler"]:hover,
 html.pake-custom-theme div[data-testid="grid-container"] > div:hover {
-  background-color: var(--background-elevated-highlight) !important;
-  border-color: rgba(30, 215, 96, 0.4) !important;
-  transform: translateY(-4px) scale(1.01) !important;
+  background-color: #161616 !important;
+  border-color: var(--pake-accent) !important;
+  transform: translateY(-4px) scale(1.02) !important;
 }
 
-/* 4. Player Inferiore (Galleggiante e compatto) */
-html.pake-custom-theme footer,
-html.pake-custom-theme [data-testid="now-playing-bar"] {
-  background-color: rgba(10, 11, 15, 0.98) !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+/* 4. PLAYER FLOTTANTE: pillola staccata dai bordi (cambio layout percepibile) */
+html.pake-custom-theme [data-testid="now-playing-bar"],
+html.pake-custom-theme footer {
+  background-color: #0a0a0a !important;
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  border-radius: 14px !important;
+  margin: 0 10px 8px 10px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.09) !important;
 }
 
-/* 5. Cursori (Volume e Traccia) - Stile Pillola Luminosa */
+/* 5. Slider accent pillola */
 html.pake-custom-theme .playback-bar .progress-bar__slider,
 html.pake-custom-theme .volume-bar .progress-bar__slider {
-  background-color: var(--essential-positive) !important;
+  background-color: var(--pake-accent) !important;
   height: 6px !important;
   border-radius: 6px !important;
 }
 html.pake-custom-theme .progress-bar__bg {
-  background-color: rgba(255, 255, 255, 0.1) !important;
+  background-color: rgba(255, 255, 255, 0.12) !important;
 }
 
-/* 6. Pulsanti Play verdi (Più vibranti) */
+/* 6. Play button accent + pop */
 html.pake-custom-theme button[data-testid="play-button"] {
-  transform: scale(1.05) !important;
   transition: transform 0.15s ease, filter 0.15s ease !important;
 }
 html.pake-custom-theme button[data-testid="play-button"]:hover {
-  transform: scale(1.1) !important;
-  filter: brightness(1.2) !important;
+  transform: scale(1.12) !important;
+  filter: brightness(1.25) !important;
 }
 
-/* 7. PRESTAZIONI ESTREME: Niente filtri VRAM-killer */
+/* 7. PERFORMANCE: zero filtri GPU, zero canvas video */
 html.pake-custom-theme * {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  box-shadow: none !important;
   text-shadow: none !important;
 }
-
-/* Spegne i Canvas degli artisti (consumano il 30% della CPU/GPU) */
 html.pake-custom-theme div[data-testid="now-playing-widget"] video,
 html.pake-custom-theme .main-view-container video,
 html.pake-custom-theme canvas {
   display: none !important;
 }
 
-/* 8. Scrollbar invisibile e hi-tech */
-html.pake-custom-theme ::-webkit-scrollbar {
-  width: 8px !important;
-}
-html.pake-custom-theme ::-webkit-scrollbar-track {
-  background: transparent !important;
-}
+/* 8. Scrollbar accent */
+html.pake-custom-theme ::-webkit-scrollbar { width: 8px !important; }
+html.pake-custom-theme ::-webkit-scrollbar-track { background: transparent !important; }
 html.pake-custom-theme ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.12) !important;
   border-radius: 10px !important;
-  border: 2px solid var(--background-base) !important;
 }
 html.pake-custom-theme ::-webkit-scrollbar-thumb:hover {
-  background: rgba(30, 215, 96, 0.6) !important;
+  background: var(--pake-accent) !important;
 }
 
-/* 9. Virtualizzazione delle liste (Distrugge dalla memoria grafica le righe fuori schermo) */
+/* 9. Virtualizzazione liste */
 html.pake-custom-theme div[role="row"],
 html.pake-custom-theme [data-testid="tracklist-row"] {
   content-visibility: auto !important;
   contain-intrinsic-size: 56px !important;
 }
 
-/* 10. VARIABILI COMPLETE — senza queste menu, modali e pulsanti restano originali */
-html.pake-custom-theme {
-  --background-elevated-press: #14161d !important;
-  --background-tinted-base: #0c0e13 !important;
-  --background-tinted-highlight: #171a23 !important;
-  --background-tinted-press: #101319 !important;
-  --layer-base: #0a0b0f !important;
-  --layer-highlight: #151821 !important;
-  --essential-base: #1ed760 !important;
-  --essential-highlight: #3ce477 !important;
-  --essential-press: #12a244 !important;
-  --text-bright-accent: #1ed760 !important;
-  --decorative-base: #1ed760 !important;
+/* 10. DEPURAZIONE UI: toglie il rumore visivo di Spotify */
+html.pake-custom-theme [data-testid="upgrade-button"],
+html.pake-custom-theme [data-testid="context-item-info-ad"],
+html.pake-custom-theme .main-topBar-UpgradeButton {
+  display: none !important;
 }
 
-/* 11. Topbar coerente col resto */
-html.pake-custom-theme .main-topBar-container,
-html.pake-custom-theme .Root__top-container header {
-  background-color: rgba(7, 8, 10, 0.92) !important;
-  backdrop-filter: none !important;
+/* 11. Radius uniforme + focus accent */
+html.pake-custom-theme button,
+html.pake-custom-theme input,
+html.pake-custom-theme [role="menu"] {
+  border-radius: 10px !important;
 }
-
-/* 12. Focus ring verde + radius uniforme (revamp percepibile) */
 html.pake-custom-theme button:focus-visible,
 html.pake-custom-theme a:focus-visible {
-  outline: 2px solid var(--essential-positive) !important;
+  outline: 2px solid var(--pake-accent) !important;
   outline-offset: 2px !important;
 }
-html.pake-custom-theme button,
-html.pake-custom-theme input {
-  border-radius: 10px !important;
+
+/* 12. Titoli sezione in accent (tocco distintivo) */
+html.pake-custom-theme .main-shelf-shelf-title,
+html.pake-custom-theme h1,
+html.pake-custom-theme .main-type-canon {
+  color: #fff !important;
+}
+html.pake-custom-theme .main-shelf-shelf-title::after {
+  content: "";
+  display: block;
+  width: 28px; height: 3px;
+  border-radius: 2px;
+  margin-top: 6px;
+  background: var(--pake-accent);
+}
+
+/* 13. ANIMATION PACK — effetti carini, solo transform/opacity */
+
+/* 13a. Fade-in a cascata delle card (staggered entrance) */
+html.pake-custom-theme [data-testid="card-click-handler"],
+html.pake-custom-theme div[data-testid="grid-container"] > div {
+  animation: pake-card-in 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes pake-card-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* 13b. Ripple verde sul play button al click */
+html.pake-custom-theme button[data-testid="play-button"] {
+  position: relative; overflow: hidden;
+}
+html.pake-custom-theme button[data-testid="play-button"]::after {
+  content: ""; position: absolute; inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle, var(--pake-accent) 10%, transparent 10.01%);
+  opacity: 0; transform: scale(4);
+  transition: transform 0.5s ease-out, opacity 0.6s ease-out;
+  pointer-events: none;
+}
+html.pake-custom-theme button[data-testid="play-button"]:active::after {
+  transform: scale(0); opacity: 0.35;
+  transition: 0s;
+}
+
+/* 13c. Barra accent animata sotto il titolo sezione (shine loop) */
+html.pake-custom-theme .main-shelf-shelf-title::after {
+  background: linear-gradient(90deg, var(--pake-accent), #fff, var(--pake-accent));
+  background-size: 200% 100%;
+  animation: pake-shine 2.5s linear infinite;
+}
+@keyframes pake-shine {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+/* 13d. Punto "live" pulsante accanto al brano in riproduzione */
+html.pake-custom-theme [data-testid="tracklist-row"] .main-play-PlayButton ~ * .Type__TypeElement-sc-goli3j-0::before,
+html.pake-custom-theme [data-testid="now-playing-widget"] .main-trackInfo-name::before {
+  content: ""; display: inline-block;
+  width: 7px; height: 7px; margin-right: 8px;
+  border-radius: 50%;
+  background: var(--pake-accent);
+  animation: pake-pulse 1.6s ease-in-out infinite;
+  vertical-align: middle;
+}
+@keyframes pake-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.4; transform: scale(0.75); }
+}
+
+/* 13e. Progress bar: glow accent che segue lo slider */
+html.pake-custom-theme .playback-bar .progress-bar__slider {
+  box-shadow: 0 0 12px 2px var(--pake-accent) !important;
+  transition: box-shadow 0.2s ease !important;
+}
+
+/* 13f. Sidebar: voci con slide + tinta accent all'hover */
+html.pake-custom-theme .Root__nav-bar li a,
+html.pake-custom-theme .Root__nav-bar [data-testid="nav-item-link"] {
+  transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.15s ease, background-color 0.15s ease !important;
+}
+html.pake-custom-theme .Root__nav-bar li a:hover,
+html.pake-custom-theme .Root__nav-bar [data-testid="nav-item-link"]:hover {
+  transform: translateX(4px);
+  color: var(--pake-accent) !important;
+}
+
+/* 13g. Tracklist: righe con fade-in leggero allo scroll-in */
+html.pake-custom-theme div[role="row"],
+html.pake-custom-theme [data-testid="tracklist-row"] {
+  animation: pake-row-in 0.3s ease both;
+}
+@keyframes pake-row-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* 13h. Player flottante: micro-bounce quando parte una nuova traccia */
+html.pake-custom-theme [data-testid="now-playing-bar"] {
+  animation: pake-bounce 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes pake-bounce {
+  0%   { transform: translateY(0); }
+  35%  { transform: translateY(-5px); }
+  70%  { transform: translateY(2px); }
+  100% { transform: translateY(0); }
+}
+
+/* 13i. Cover album: rotazione 3D all'hover (tilt) */
+html.pake-custom-theme [data-testid="card-image"] {
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+}
+html.pake-custom-theme [data-testid="card-click-handler"]:hover [data-testid="card-image"] {
+  transform: perspective(600px) rotateX(6deg) rotateY(-6deg) scale(1.05);
 }
