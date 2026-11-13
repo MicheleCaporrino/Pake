@@ -1,41 +1,19 @@
-/* PAKE Spotify v6 — ispirato ad Apple Music (dark). Si spegne con html.pake-off.
-   Niente blur sulle superfici fisse e niente will-change: costano GPU/RAM senza dare nulla. */
+/* PAKE Spotify — UI stile Apple Music, colori nativi di Spotify (verde incluso).
+   Non ridefinisce le variabili colore di Spotify: cambia struttura, linee, forme e movimento.
+   Si spegne con html.pake-off. */
 
 html:not(.pake-off) {
   color-scheme: dark;
-  --pake-accent: #fa2d48;
-  --pake-accent-2: #ff6479;
-  --pake-bg: #1c1c1e;
-  --pake-side: #161618;
-  --pake-surface: #2c2c2e;
-  --pake-surface-2: #3a3a3c;
+  --pake-accent: #1ed760;
   --pake-hair: rgba(255,255,255,.08);
+  --pake-side: #0a0a0a;
   --pake-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
   --pake-ease: cubic-bezier(.2,.75,.25,1);
 }
 
-/* Variabili native di Spotify: accento rosso e grigi Apple su tutta l'interfaccia */
-html:not(.pake-off),
-html:not(.pake-off) .encore-dark-theme,
-html:not(.pake-off) .encore-layout-themes,
-html:not(.pake-off) .encore-base-set {
-  --background-base: #1c1c1e;
-  --background-highlight: #2c2c2e;
-  --background-press: #000;
-  --background-elevated-base: #2c2c2e;
-  --background-elevated-highlight: #3a3a3c;
-  --background-tinted-base: rgba(255,255,255,.08);
-  --background-tinted-highlight: rgba(255,255,255,.13);
-  --essential-bright-accent: #fa2d48;
-  --text-bright-accent: #ff6479;
-}
-
-/* ---------- Loader di avvio ----------
-   Parte da solo con il CSS; la patch aggiunge .pake-ready quando l'app è disegnata.
-   Se la patch non parte, il failsafe lo toglie comunque dopo 12 s. */
+/* ---------- Loader di avvio (si toglie con .pake-ready; failsafe CSS dopo 12 s) ---------- */
 html:not(.pake-off)::before {
-  content: ""; position: fixed; inset: 0; z-index: 2147483600; pointer-events: none;
-  background: #000;
+  content: ""; position: fixed; inset: 0; z-index: 2147483600; pointer-events: none; background: #000;
   transition: opacity .45s ease, visibility .45s;
   animation: pake-failsafe .01s linear 12s forwards;
 }
@@ -50,81 +28,87 @@ html.pake-ready::before, html.pake-ready::after { opacity: 0; visibility: hidden
 @keyframes pake-spin { to { transform: rotate(360deg); } }
 @keyframes pake-failsafe { to { opacity: 0; } }
 
-/* ---------- Struttura: pannelli piatti, divisori sottili ---------- */
-html:not(.pake-off), html:not(.pake-off) body { background: var(--pake-side) !important; }
+/* ---------- Struttura: pannelli uniti, linee sottili ---------- */
 html:not(.pake-off) body, html:not(.pake-off) .encore-text { font-family: var(--pake-font) !important; }
-html:not(.pake-off) .Root__top-container { background: var(--pake-side) !important; gap: 0 !important; padding: 0 !important; }
-html:not(.pake-off) .Root__globalNav { background: var(--pake-side) !important; }
+html:not(.pake-off) .Root__top-container { gap: 0 !important; padding: 0 !important; }
 html:not(.pake-off) .Root__nav-bar,
-html:not(.pake-off) .Root__right-sidebar {
-  background: var(--pake-side) !important; border-radius: 0 !important; border: 0 !important;
+html:not(.pake-off) .Root__main-view,
+html:not(.pake-off) .Root__right-sidebar { border-radius: 0 !important; border: 0 !important; }
+html:not(.pake-off) .Root__nav-bar { background: var(--pake-side) !important; border-right: 1px solid var(--pake-hair) !important; }
+html:not(.pake-off) .Root__right-sidebar { background: var(--pake-side) !important; border-left: 1px solid var(--pake-hair) !important; }
+html:not(.pake-off) .Root__globalNav { border-bottom: 1px solid var(--pake-hair); }
+
+/* Titoli grandi e compatti */
+html:not(.pake-off) .main-view-container h1 { font-weight: 800 !important; letter-spacing: -.025em; }
+html:not(.pake-off) .main-view-container h2 { font-weight: 700 !important; letter-spacing: -.015em; }
+
+/* Ingresso morbido della pagina a ogni navigazione */
+html:not(.pake-off) .main-view-container__scroll-node-child section:not(section section) {
+  animation: pake-in .28s var(--pake-ease) both;
 }
-html:not(.pake-off) .Root__nav-bar { border-right: 1px solid var(--pake-hair) !important; }
-html:not(.pake-off) .Root__right-sidebar { border-left: 1px solid var(--pake-hair) !important; }
-html:not(.pake-off) .Root__main-view { background: var(--pake-bg) !important; border-radius: 0 !important; border: 0 !important; }
-html:not(.pake-off) .main-view-container,
-html:not(.pake-off) .main-view-container__scroll-node-child,
-html:not(.pake-off) .main-actionBarBackground,
-html:not(.pake-off) .main-home-homeHeader { background-image: none !important; background-color: transparent !important; }
+@keyframes pake-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
-/* Titoli grandi e compatti come in Apple Music */
-html:not(.pake-off) .main-view-container h1 { font-weight: 800 !important; letter-spacing: -.02em; }
-html:not(.pake-off) .main-view-container h2 { font-weight: 700 !important; letter-spacing: -.01em; }
+/* Barra superiore della vista: vetro sfocato sopra il contenuto che scorre */
+html:not(.pake-off) .main-topBar-background {
+  -webkit-backdrop-filter: blur(20px) saturate(1.5); backdrop-filter: blur(20px) saturate(1.5);
+}
 
-/* ---------- Barra di ricerca in alto ---------- */
+/* ---------- Barra di ricerca ---------- */
 html:not(.pake-off) [data-testid="search-input"] { font-family: var(--pake-font) !important; }
-html:not(.pake-off) [data-testid="search-input"]::placeholder { color: rgba(255,255,255,.45); }
+html:not(.pake-off) .Root__globalNav form, html:not(.pake-off) .Root__globalNav [role="search"] { transition: box-shadow .18s ease; }
 html:not(.pake-off) .Root__globalNav form:focus-within,
-html:not(.pake-off) .Root__globalNav [role="search"]:focus-within {
-  box-shadow: 0 0 0 2px rgba(250,45,72,.55); border-radius: 500px;
-}
+html:not(.pake-off) .Root__globalNav [role="search"]:focus-within { box-shadow: 0 0 0 2px rgba(30,215,96,.5), 0 8px 24px rgba(0,0,0,.35); }
 
 /* ---------- Sidebar / libreria ---------- */
-html:not(.pake-off) .Root__nav-bar a { border-radius: 8px !important; transition: background-color .12s ease, color .12s ease; }
+html:not(.pake-off) .Root__nav-bar a { border-radius: 10px !important; transition: background-color .14s ease, color .14s ease; }
 html:not(.pake-off) .Root__nav-bar a:hover { background: rgba(255,255,255,.07) !important; }
-html:not(.pake-off) .Root__nav-bar a[aria-current="page"] { background: rgba(255,255,255,.11) !important; color: #fff !important; }
+html:not(.pake-off) .Root__nav-bar a[aria-current="page"] { background: rgba(255,255,255,.1) !important; }
+html:not(.pake-off) .Root__nav-bar img { border-radius: 8px !important; }
 
-/* ---------- Card: piatte, senza bordo ---------- */
+/* ---------- Card: piatte, copertina in evidenza ---------- */
 html:not(.pake-off) [data-testid="grid-container"] > div,
 html:not(.pake-off) [data-testid="card"] {
-  background: transparent !important; border: 0 !important; border-radius: 12px !important;
-  transition: background-color .18s ease;
+  background: transparent !important; border: 0 !important; border-radius: 14px !important;
+  transition: transform .24s var(--pake-ease), background-color .2s ease;
 }
 html:not(.pake-off) [data-testid="grid-container"] > div:hover,
-html:not(.pake-off) [data-testid="card"]:hover { background: rgba(255,255,255,.07) !important; }
+html:not(.pake-off) [data-testid="card"]:hover { background: rgba(255,255,255,.065) !important; transform: translateY(-3px); }
+html:not(.pake-off) [data-testid="grid-container"] img,
+html:not(.pake-off) [data-testid="card"] img { box-shadow: 0 8px 22px rgba(0,0,0,.38); }
 
-/* Pulsante play delle card in rosso */
-html:not(.pake-off) [data-testid="play-button"] {
-  background-color: var(--pake-accent) !important; color: #fff !important;
-  transition: transform .15s var(--pake-ease), filter .15s ease;
+/* Righe dei brani: arrotondate, senza separatori pesanti */
+html:not(.pake-off) [data-testid="tracklist-row"] { border-radius: 8px !important; transition: background-color .12s ease; }
+
+/* Pulsante play: alone e scala, verde nativo */
+html:not(.pake-off) [data-testid="play-button"] { transition: transform .16s var(--pake-ease), box-shadow .16s ease; }
+html:not(.pake-off) [data-testid="play-button"]:hover { transform: scale(1.07); box-shadow: 0 0 22px rgba(30,215,96,.4); }
+
+/* ---------- Player: pannello flottante minimale ---------- */
+html:not(.pake-off) .Root__now-playing-bar { background: transparent !important; padding: 0 12px 10px !important; }
+html:not(.pake-off) [data-testid="now-playing-bar"] {
+  background: linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.02)), #141414 !important;
+  border: 1px solid var(--pake-hair) !important; border-radius: 14px !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.05);
 }
-html:not(.pake-off) [data-testid="play-button"]:hover { transform: scale(1.06); filter: brightness(1.08); }
+html:not(.pake-off) [data-testid="now-playing-bar"] img { border-radius: 8px !important; box-shadow: 0 4px 14px rgba(0,0,0,.5); }
+html:not(.pake-off) [data-testid="now-playing-bar"] button { transition: transform .14s var(--pake-ease), color .14s ease; }
+html:not(.pake-off) [data-testid="now-playing-bar"] button:hover { transform: scale(1.08); }
+html:not(.pake-off) [data-testid="control-button-playpause"] { box-shadow: 0 0 18px rgba(255,255,255,.12); }
 
-/* ---------- Player: barra piena, linea sottile ---------- */
-html:not(.pake-off) .Root__now-playing-bar { background: #232326 !important; border-top: 1px solid var(--pake-hair) !important; padding: 0 !important; }
-html:not(.pake-off) [data-testid="now-playing-bar"] { background: transparent !important; border: 0 !important; box-shadow: none !important; border-radius: 0 !important; }
-html:not(.pake-off) [data-testid="now-playing-bar"] img { border-radius: 6px !important; box-shadow: 0 4px 14px rgba(0,0,0,.45); }
-html:not(.pake-off) [data-testid="now-playing-bar"] button { transition: transform .12s var(--pake-ease), color .12s ease; }
-html:not(.pake-off) [data-testid="now-playing-bar"] button:hover { transform: scale(1.07); }
-html:not(.pake-off) [data-testid="playback-progressbar"],
-html:not(.pake-off) [data-testid="volume-bar"] { --progress-bar-active-color: var(--pake-accent); }
-
-/* ---------- Focus: solo per elementi interattivi, mai sui campi di testo ---------- */
-html:not(.pake-off) :is(a, button, [role="button"], [role="tab"], [role="row"]):focus-visible {
-  outline: 2px solid var(--pake-accent) !important; outline-offset: 2px !important;
-}
+/* ---------- Focus: solo elementi interattivi, mai i campi di testo ---------- */
+html:not(.pake-off) :is(a, button, [role="button"], [role="tab"], [role="row"]):focus-visible { outline: 2px solid var(--pake-accent) !important; outline-offset: 2px !important; }
 html:not(.pake-off) :is(input, textarea, [contenteditable="true"]):focus-visible { outline: none !important; box-shadow: none; }
 
-/* ---------- Selezione e scrollbar ---------- */
-html:not(.pake-off) ::selection { color: #fff; background: var(--pake-accent); }
+/* ---------- Selezione e scrollbar sottile ---------- */
+html:not(.pake-off) ::selection { color: #04140a; background: var(--pake-accent); }
 html:not(.pake-off) ::-webkit-scrollbar { width: 10px; height: 10px; }
 html:not(.pake-off) ::-webkit-scrollbar-track { background: transparent; }
-html:not(.pake-off) ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.18); border: 3px solid transparent; background-clip: padding-box; border-radius: 20px; }
-html:not(.pake-off) ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.32); border: 3px solid transparent; background-clip: padding-box; }
+html:not(.pake-off) ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.16); border: 3px solid transparent; background-clip: padding-box; border-radius: 20px; }
+html:not(.pake-off) ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.3); border: 3px solid transparent; background-clip: padding-box; }
 
 /* ---------- Equalizzatore ---------- */
 .pake-eq { display: inline-flex; align-items: flex-end; gap: 2px; height: 13px; margin-right: 9px; vertical-align: middle; }
-.pake-eq i { display: block; width: 2px; height: 4px; border-radius: 2px; background: var(--pake-accent, #fa2d48); animation: pake-eq 850ms ease-in-out infinite alternate; }
+.pake-eq i { display: block; width: 2px; height: 4px; border-radius: 2px; background: #1ed760; animation: pake-eq 850ms ease-in-out infinite alternate; }
 .pake-eq i:nth-child(2) { animation-delay: 180ms; }
 .pake-eq i:nth-child(3) { animation-delay: 360ms; }
 @keyframes pake-eq { from { height: 3px; } to { height: 13px; } }

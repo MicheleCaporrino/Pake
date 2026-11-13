@@ -1,4 +1,4 @@
-/* PAKE Spotify v6 — loader, equalizzatore, palette comandi con ricerca nella libreria.
+/* PAKE Spotify — loader, equalizzatore, palette comandi con ricerca nella libreria.
    Tema OFF: nessun observer, nessun listener di scroll; la palette resta disponibile ma non è montata finché non serve. */
 (() => {
   "use strict";
@@ -158,10 +158,10 @@
   let pal = null, inputEl = null, listEl = null, countEl = null, items = [], sel = 0, tokens = [];
 
   const PAL_CSS = `
-#pake-pal{--a:#fa2d48;position:fixed;inset:0;z-index:2147483647;display:none;align-items:flex-start;justify-content:center;padding:11vh 16px 20px;background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);font:14px/1.3 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;color:#f5f5f7}
+#pake-pal{--a:#1ed760;position:fixed;inset:0;z-index:2147483647;display:none;align-items:flex-start;justify-content:center;padding:11vh 16px 20px;background:rgba(0,0,0,.5);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);font:14px/1.3 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;color:#f5f5f7}
 #pake-pal[data-open="true"]{display:flex;animation:pake-pal-in .16s cubic-bezier(.2,.75,.25,1)}
 @keyframes pake-pal-in{from{opacity:0}to{opacity:1}}
-#pake-pal .box{width:min(640px,100%);max-height:72vh;display:flex;flex-direction:column;border-radius:18px;background:rgba(40,40,43,.88);-webkit-backdrop-filter:blur(40px) saturate(1.8);backdrop-filter:blur(40px) saturate(1.8);border:1px solid rgba(255,255,255,.12);box-shadow:0 30px 90px rgba(0,0,0,.6);overflow:hidden}
+#pake-pal .box{width:min(640px,100%);max-height:72vh;display:flex;flex-direction:column;border-radius:18px;background:rgba(24,24,24,.9);-webkit-backdrop-filter:blur(40px) saturate(1.6);backdrop-filter:blur(40px) saturate(1.6);border:1px solid rgba(255,255,255,.1);box-shadow:0 30px 90px rgba(0,0,0,.65);overflow:hidden}
 #pake-pal .bar{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.08)}
 #pake-pal .bar svg{width:22px;height:22px;flex:none;opacity:.55}
 #pake-pal .bar input{flex:1;min-width:0;border:0;outline:0!important;box-shadow:none!important;background:transparent;color:inherit;font:inherit;font-size:21px;font-weight:500;caret-color:var(--a)}
@@ -169,18 +169,17 @@
 #pake-pal kbd{font:11px/1 inherit;padding:4px 7px;border-radius:6px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.65)}
 #pake-pal .list{overflow:auto;padding:8px;overscroll-behavior:contain}
 #pake-pal .sec{padding:10px 12px 4px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.42)}
-#pake-pal .row{display:flex;align-items:center;gap:12px;padding:8px 10px;border-radius:10px;cursor:pointer}
-#pake-pal .row[aria-selected="true"]{background:var(--a);color:#fff}
+#pake-pal .row{display:flex;align-items:center;gap:12px;padding:8px 10px;border-radius:10px;cursor:pointer;transition:background-color .1s}
+#pake-pal .row[aria-selected="true"]{background:rgba(255,255,255,.1);box-shadow:inset 3px 0 0 var(--a)}
 #pake-pal .art{width:40px;height:40px;border-radius:8px;flex:none;background:rgba(255,255,255,.09);display:grid;place-items:center;font-size:18px;overflow:hidden}
 #pake-pal .art img{width:100%;height:100%;object-fit:cover;display:block}
 #pake-pal .txt{min-width:0;flex:1}
 #pake-pal .t,#pake-pal .s{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #pake-pal .t{font-size:15px;font-weight:600}
 #pake-pal .s{font-size:12.5px;color:rgba(255,255,255,.55);margin-top:1px}
-#pake-pal .row[aria-selected="true"] .s{color:rgba(255,255,255,.82)}
-#pake-pal mark{background:none;color:inherit;font-weight:800;text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1.5px}
+#pake-pal mark{background:none;color:var(--a);font-weight:700}
 #pake-pal .tag{font-size:11px;padding:3px 8px;border-radius:6px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);flex:none}
-#pake-pal .row[aria-selected="true"] .tag{background:rgba(255,255,255,.22);color:#fff}
+#pake-pal .row[aria-selected="true"] .tag{background:rgba(30,215,96,.18);color:var(--a)}
 #pake-pal .empty{padding:22px;text-align:center;color:rgba(255,255,255,.5)}
 #pake-pal .foot{display:flex;gap:14px;align-items:center;padding:10px 16px;border-top:1px solid rgba(255,255,255,.08);font-size:12px;color:rgba(255,255,255,.5)}
 #pake-pal .foot .sp{flex:1}
@@ -338,5 +337,5 @@
   sync();
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", startObservers, { once: true });
   else startObservers();
-  console.info("[PAKE v6] caricato", { theme: off ? "off" : "on", libreria: index.length });
+  console.info("[PAKE] caricato", { theme: off ? "off" : "on", libreria: index.length });
 })();

@@ -23,7 +23,7 @@ on:
         description: "App name (lowercase for Linux)"
         required: true
       inject:
-        description: "Inject CSS/JS files, vuoto = nessun tema (es: custom/spotify/spotify-patch-v6.js,custom/spotify/spotify-theme-v6.css)"
+        description: "Inject CSS/JS files, vuoto = nessun tema (es: custom/spotify/patch.js,custom/spotify/theme.css)"
         required: false
       profile:
         description: "lean = RAM minima (default upstream) | fluid = flag GPU, piu' risorse"
