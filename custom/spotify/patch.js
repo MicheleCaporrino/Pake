@@ -39,6 +39,23 @@
     host.insertBefore(eq, host.firstChild);
   }
 
+  /* ---------- Stato riproduzione: l'etichetta del pulsante contiene "paus…" solo mentre suona ---------- */
+  let playBtn = null, playObs = null;
+  function updatePlaying() {
+    const l = ((playBtn && playBtn.getAttribute("aria-label")) || "").toLowerCase();
+    root.classList.toggle("pake-playing", /paus/.test(l));
+  }
+  function watchPlay() {
+    const b = document.querySelector('[data-testid="control-button-playpause"]');
+    if (b === playBtn) return;
+    if (playObs) { playObs.disconnect(); playObs = null; }
+    playBtn = b;
+    if (!b) { root.classList.remove("pake-playing"); return; }
+    updatePlaying();
+    playObs = new MutationObserver(updatePlaying);
+    playObs.observe(b, { attributes: true, attributeFilter: ["aria-label"] });
+  }
+
   /* ---------- Indice della libreria (playlist, album, artisti salvati) ---------- */
   function saveIndex() {
     try { localStorage.setItem(IDX_KEY, JSON.stringify(index.slice(0, 800))); } catch (_) {}
@@ -90,7 +107,7 @@
   function startObservers() {
     stopObservers();
     if (off || !document.body) return;
-    const tick = () => { mountEq(); checkReady(); attachNavScan(); };
+    const tick = () => { mountEq(); watchPlay(); checkReady(); attachNavScan(); };
     tick();
     bodyObs = new MutationObserver(() => {
       if (raf) return; raf = true;
@@ -106,6 +123,8 @@
     if (bodyObs) { bodyObs.disconnect(); bodyObs = null; }
     if (classObs) { classObs.disconnect(); classObs = null; }
     detachNavScan();
+    if (playObs) { playObs.disconnect(); playObs = null; }
+    playBtn = null; root.classList.remove("pake-playing");
     document.querySelectorAll(".pake-eq").forEach(n => n.remove());
   }
   function setTheme(nextOff) {

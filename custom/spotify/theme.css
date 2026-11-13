@@ -88,6 +88,43 @@ html:not(.pake-off) [data-testid="now-playing-bar"] button { transition: transfo
 html:not(.pake-off) [data-testid="now-playing-bar"] button:hover { transform: scale(1.08); }
 html:not(.pake-off) [data-testid="control-button-playpause"] { box-shadow: 0 0 18px rgba(255,255,255,.12); }
 
+/* ================= Apple Music: effetti più marcati ================= */
+/* Tipografia di sistema ovunque (Segoe UI Variable / SF), titoli più grandi e stretti */
+html:not(.pake-off) body, html:not(.pake-off) body * { font-family: var(--pake-font) !important; }
+html:not(.pake-off) #main-view h2 { font-size: 24px !important; font-weight: 700 !important; letter-spacing: -.02em; }
+html:not(.pake-off) #main-view h1 { letter-spacing: -.035em; }
+
+/* Mensole: ingresso a cascata, una dopo l'altra */
+html:not(.pake-off) section[data-testid="component-shelf"] { animation: pake-in .42s var(--pake-ease) both; }
+html:not(.pake-off) section[data-testid="component-shelf"]:nth-of-type(2) { animation-delay: .06s; }
+html:not(.pake-off) section[data-testid="component-shelf"]:nth-of-type(3) { animation-delay: .12s; }
+html:not(.pake-off) section[data-testid="component-shelf"]:nth-of-type(4) { animation-delay: .18s; }
+html:not(.pake-off) section[data-testid="component-shelf"]:nth-of-type(n+5) { animation-delay: .24s; }
+
+/* Card: copertina grande, ombra profonda, zoom morbido all'hover */
+html:not(.pake-off) [data-testid="grid-container"] > div { padding: 10px !important; }
+html:not(.pake-off) [data-testid="grid-container"] img {
+  box-shadow: 0 14px 34px rgba(0,0,0,.5), 0 2px 6px rgba(0,0,0,.3);
+  transition: transform .35s var(--pake-ease), filter .25s ease;
+}
+html:not(.pake-off) [data-testid="grid-container"] > div:hover img { transform: scale(1.035); filter: brightness(1.06) saturate(1.08); }
+
+/* Libreria: righe come in Apple Music (arrotondate, evidenza all'hover, titolo più leggero) */
+html:not(.pake-off) #Desktop_LeftSidebar_Id [data-encore-id="listRow"] { border-radius: 10px !important; transition: background-color .14s ease; }
+html:not(.pake-off) #Desktop_LeftSidebar_Id [data-encore-id="listRow"]:hover { background: rgba(255,255,255,.08) !important; }
+html:not(.pake-off) #Desktop_LeftSidebar_Id [data-encore-id="listRowTitle"] { font-weight: 600 !important; letter-spacing: -.005em; }
+html:not(.pake-off) #Desktop_LeftSidebar_Id [data-encore-id="listRowSubtitle"] { font-size: 12px !important; opacity: .72; }
+html:not(.pake-off) #Desktop_LeftSidebar_Id [data-testid="entity-image"] { border-radius: 8px !important; box-shadow: 0 3px 10px rgba(0,0,0,.4); }
+
+/* Pannello "In riproduzione": copertina grande con ombra */
+html:not(.pake-off) #Desktop_PanelContainer_Id img { border-radius: 12px !important; box-shadow: 0 18px 44px rgba(0,0,0,.55); }
+
+/* Elenchi di brani: righe alternate leggere */
+html:not(.pake-off) #main-view [role="row"]:is([aria-rowindex$="0"],[aria-rowindex$="2"],[aria-rowindex$="4"],[aria-rowindex$="6"],[aria-rowindex$="8"]) > [data-testid="tracklist-row"] { background: rgba(255,255,255,.035); }
+
+/* Barra di ricerca: campo più morbido */
+html:not(.pake-off) #global-nav-bar [data-testid="search-input"] { letter-spacing: -.005em; }
+
 /* ---------- Focus: solo elementi interattivi, mai i campi di testo ---------- */
 html:not(.pake-off) :is(a, button, [role="button"], [role="tab"], [role="row"]):focus-visible { outline: 2px solid var(--pake-accent) !important; outline-offset: 2px !important; }
 html:not(.pake-off) :is(input, textarea, [contenteditable="true"]):focus-visible { outline: none !important; box-shadow: none; }
@@ -99,11 +136,12 @@ html:not(.pake-off) ::-webkit-scrollbar-track { background: transparent; }
 html:not(.pake-off) ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.16); border: 3px solid transparent; background-clip: padding-box; border-radius: 20px; }
 html:not(.pake-off) ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.3); border: 3px solid transparent; background-clip: padding-box; }
 
-/* ---------- Equalizzatore ---------- */
+/* ---------- Equalizzatore: animato solo mentre il brano suona ---------- */
 .pake-eq { display: inline-flex; align-items: flex-end; gap: 2px; height: 13px; margin-right: 9px; vertical-align: middle; }
-.pake-eq i { display: block; width: 2px; height: 4px; border-radius: 2px; background: #1ed760; animation: pake-eq 850ms ease-in-out infinite alternate; }
-.pake-eq i:nth-child(2) { animation-delay: 180ms; }
-.pake-eq i:nth-child(3) { animation-delay: 360ms; }
+.pake-eq i { display: block; width: 2px; height: 4px; border-radius: 2px; background: #1ed760; transition: height .25s ease; }
+html.pake-playing .pake-eq i { animation: pake-eq 850ms ease-in-out infinite alternate; }
+html.pake-playing .pake-eq i:nth-child(2) { animation-delay: 180ms; }
+html.pake-playing .pake-eq i:nth-child(3) { animation-delay: 360ms; }
 @keyframes pake-eq { from { height: 3px; } to { height: 13px; } }
 html.pake-off .pake-eq { display: none; }
 
