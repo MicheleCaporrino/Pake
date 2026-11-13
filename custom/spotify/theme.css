@@ -1,5 +1,6 @@
 /* PAKE Spotify — UI stile Apple Music, colori nativi di Spotify (verde incluso).
-   Non ridefinisce le variabili colore di Spotify: cambia struttura, linee, forme e movimento.
+   Selettori verificati sul web player reale: #main-view, #Desktop_LeftSidebar_Id, #global-nav-bar,
+   #Desktop_PanelContainer_Id e [data-testid]. Non ridefinisce le variabili colore di Spotify.
    Si spegne con html.pake-off. */
 
 html:not(.pake-off) {
@@ -29,14 +30,16 @@ html.pake-ready::before, html.pake-ready::after { opacity: 0; visibility: hidden
 @keyframes pake-failsafe { to { opacity: 0; } }
 
 /* ---------- Struttura: pannelli uniti, linee sottili ---------- */
-html:not(.pake-off) body, html:not(.pake-off) .encore-text { font-family: var(--pake-font) !important; }
-html:not(.pake-off) .Root__top-container { gap: 0 !important; padding: 0 !important; }
-html:not(.pake-off) .Root__nav-bar,
-html:not(.pake-off) .Root__main-view,
-html:not(.pake-off) .Root__right-sidebar { border-radius: 0 !important; border: 0 !important; }
-html:not(.pake-off) .Root__nav-bar { background: var(--pake-side) !important; border-right: 1px solid var(--pake-hair) !important; }
-html:not(.pake-off) .Root__right-sidebar { background: var(--pake-side) !important; border-left: 1px solid var(--pake-hair) !important; }
-html:not(.pake-off) .Root__globalNav { border-bottom: 1px solid var(--pake-hair); }
+html:not(.pake-off) body { font-family: var(--pake-font) !important; }
+html:not(.pake-off) [data-testid="root"] > div { gap: 0 !important; padding: 0 !important; }
+html:not(.pake-off) #global-nav-bar { border-bottom: 1px solid var(--pake-hair) !important; }
+
+html:not(.pake-off) #Desktop_LeftSidebar_Id,
+html:not(.pake-off) #main-view,
+html:not(.pake-off) #Desktop_PanelContainer_Id { border-radius: 0 !important; }
+html:not(.pake-off) #Desktop_LeftSidebar_Id { background: var(--pake-side) !important; border-right: 1px solid var(--pake-hair) !important; }
+html:not(.pake-off) #Desktop_PanelContainer_Id { background: var(--pake-side) !important; border-left: 1px solid var(--pake-hair) !important; }
+html:not(.pake-off) .main-view-container { border-radius: 0 !important; }
 
 /* Titoli grandi e compatti */
 html:not(.pake-off) .main-view-container h1 { font-weight: 800 !important; letter-spacing: -.025em; }
@@ -48,35 +51,25 @@ html:not(.pake-off) .main-view-container__scroll-node-child section:not(section 
 }
 @keyframes pake-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
-/* Barra superiore della vista: vetro sfocato sopra il contenuto che scorre */
-html:not(.pake-off) .main-topBar-background {
-  -webkit-backdrop-filter: blur(20px) saturate(1.5); backdrop-filter: blur(20px) saturate(1.5);
-}
-
 /* ---------- Barra di ricerca ---------- */
-html:not(.pake-off) [data-testid="search-input"] { font-family: var(--pake-font) !important; }
-html:not(.pake-off) .Root__globalNav form, html:not(.pake-off) .Root__globalNav [role="search"] { transition: box-shadow .18s ease; }
-html:not(.pake-off) .Root__globalNav form:focus-within,
-html:not(.pake-off) .Root__globalNav [role="search"]:focus-within { box-shadow: 0 0 0 2px rgba(30,215,96,.5), 0 8px 24px rgba(0,0,0,.35); }
+html:not(.pake-off) #global-nav-bar form { transition: box-shadow .18s ease; border-radius: 500px; }
+html:not(.pake-off) #global-nav-bar form:focus-within { box-shadow: 0 0 0 2px rgba(30,215,96,.5), 0 8px 24px rgba(0,0,0,.35); }
 
 /* ---------- Sidebar / libreria ---------- */
-html:not(.pake-off) .Root__nav-bar a { border-radius: 10px !important; transition: background-color .14s ease, color .14s ease; }
-html:not(.pake-off) .Root__nav-bar a:hover { background: rgba(255,255,255,.07) !important; }
-html:not(.pake-off) .Root__nav-bar a[aria-current="page"] { background: rgba(255,255,255,.1) !important; }
-html:not(.pake-off) .Root__nav-bar img { border-radius: 8px !important; }
+html:not(.pake-off) #Desktop_LeftSidebar_Id a { border-radius: 10px !important; transition: background-color .14s ease, color .14s ease; }
+html:not(.pake-off) #Desktop_LeftSidebar_Id a:hover { background: rgba(255,255,255,.07) !important; }
+html:not(.pake-off) #Desktop_LeftSidebar_Id a[aria-current="page"] { background: rgba(255,255,255,.1) !important; }
+html:not(.pake-off) #Desktop_LeftSidebar_Id img { border-radius: 8px !important; }
 
 /* ---------- Card: piatte, copertina in evidenza ---------- */
-html:not(.pake-off) [data-testid="grid-container"] > div,
-html:not(.pake-off) [data-testid="card"] {
+html:not(.pake-off) [data-testid="grid-container"] > div {
   background: transparent !important; border: 0 !important; border-radius: 14px !important;
   transition: transform .24s var(--pake-ease), background-color .2s ease;
 }
-html:not(.pake-off) [data-testid="grid-container"] > div:hover,
-html:not(.pake-off) [data-testid="card"]:hover { background: rgba(255,255,255,.065) !important; transform: translateY(-3px); }
-html:not(.pake-off) [data-testid="grid-container"] img,
-html:not(.pake-off) [data-testid="card"] img { box-shadow: 0 8px 22px rgba(0,0,0,.38); }
+html:not(.pake-off) [data-testid="grid-container"] > div:hover { background: rgba(255,255,255,.065) !important; transform: translateY(-3px); }
+html:not(.pake-off) [data-testid="grid-container"] img { box-shadow: 0 8px 22px rgba(0,0,0,.38); }
 
-/* Righe dei brani: arrotondate, senza separatori pesanti */
+/* Righe dei brani */
 html:not(.pake-off) [data-testid="tracklist-row"] { border-radius: 8px !important; transition: background-color .12s ease; }
 
 /* Pulsante play: alone e scala, verde nativo */
@@ -84,7 +77,7 @@ html:not(.pake-off) [data-testid="play-button"] { transition: transform .16s var
 html:not(.pake-off) [data-testid="play-button"]:hover { transform: scale(1.07); box-shadow: 0 0 22px rgba(30,215,96,.4); }
 
 /* ---------- Player: pannello flottante minimale ---------- */
-html:not(.pake-off) .Root__now-playing-bar { background: transparent !important; padding: 0 12px 10px !important; }
+html:not(.pake-off) [data-testid="root"] > div > div:has(> [data-testid="now-playing-bar"]) { background: transparent !important; padding: 0 12px 10px !important; }
 html:not(.pake-off) [data-testid="now-playing-bar"] {
   background: linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.02)), #141414 !important;
   border: 1px solid var(--pake-hair) !important; border-radius: 14px !important;
