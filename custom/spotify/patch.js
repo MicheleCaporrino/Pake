@@ -4,7 +4,7 @@
   "use strict";
   const OFF = "pake-off", READY = "pake-ready";
   const KEY = "pake_theme_off", IDX_KEY = "pake_lib_v6", PID = "pake-pal";
-  const LINK_RE = /^\/(playlist|album|artist|show|collection)(\/|$)/;
+  const NAV = "#Desktop_LeftSidebar_Id";
   const root = document.documentElement;
 
   let off = false;
@@ -21,7 +21,7 @@
 
   /* ---------- Loader: pronto quando c'è contenuto vero (link in sidebar o titoli nella vista principale) ---------- */
   function checkReady() {
-    if (ready || !document.querySelector(".Root__nav-bar a[href], .Root__main-view h1, .Root__main-view h2")) return;
+    if (ready || !document.querySelector(NAV + ' [role="row"], #main-view h1, #main-view h2, #main-view [data-testid="home-page"]')) return;
     ready = true; sync();
     setTimeout(scanLibrary, 2500);
   }
@@ -30,35 +30,42 @@
   /* ---------- Equalizzatore ---------- */
   function mountEq() {
     if (off) return;
-    const track = document.querySelector('[data-testid="now-playing-bar"] [data-testid="track"]');
-    if (!track || track.querySelector(".pake-eq")) return;
+    const host = document.querySelector('[data-testid="now-playing-bar"] [data-testid="context-item-info-title"]')
+      || document.querySelector('[data-testid="now-playing-bar"] [data-testid="context-item-link"]');
+    if (!host || host.querySelector(".pake-eq")) return;
     const eq = document.createElement("span");
     eq.className = "pake-eq"; eq.setAttribute("aria-hidden", "true");
     for (let i = 0; i < 3; i++) eq.appendChild(document.createElement("i"));
-    track.insertBefore(eq, track.firstChild);
+    host.insertBefore(eq, host.firstChild);
   }
 
   /* ---------- Indice della libreria (playlist, album, artisti salvati) ---------- */
   function saveIndex() {
     try { localStorage.setItem(IDX_KEY, JSON.stringify(index.slice(0, 800))); } catch (_) {}
   }
+  const URI_RE = /^spotify:(playlist|album|artist|show):([A-Za-z0-9]+)$/;
+  function parseUri(uri) {
+    if (uri === "spotify:collection:tracks") return { href: "/collection/tracks", t: "collection" };
+    const m = URI_RE.exec(uri);
+    return m ? { href: "/" + m[1] + "/" + m[2], t: m[1] } : null; // cartelle e utenti: ignorati
+  }
   function scanLibrary() {
-    const nav = document.querySelector(".Root__nav-bar");
+    const nav = document.querySelector(NAV);
     if (!nav) return 0;
-    const byHref = new Map(index.map(i => [i.href, i]));
+    const byUri = new Map(index.map(i => [i.uri, i]));
     let changed = 0;
-    nav.querySelectorAll("a[href]").forEach(a => {
-      const href = (a.getAttribute("href") || "").split("?")[0];
-      const m = LINK_RE.exec(href);
-      if (!m) return;
-      if (m[1] === "collection" && !/\/(tracks|episodes)$/.test(href)) return;
-      const row = a.closest('[role="row"],[role="listitem"],li') || a;
-      const lines = (row.innerText || a.innerText || "").split("\n").map(s => s.trim()).filter(Boolean);
-      if (!lines.length) return;
-      const img = row.querySelector("img");
-      const item = { href, title: lines[0], sub: lines.slice(1).join(" · "), img: (img && img.src) || "", t: m[1] };
-      const old = byHref.get(href);
-      if (!old) { index.push(item); byHref.set(href, item); changed++; }
+    nav.querySelectorAll('p[id^="listrow-title-spotify:"]').forEach(p => {
+      const uri = p.id.slice("listrow-title-".length);
+      const info = parseUri(uri);
+      if (!info) return;
+      const title = (p.textContent || "").trim();
+      if (!title) return;
+      const subEl = document.getElementById("listrow-subtitle-" + uri);
+      const row = p.closest('[role="row"]');
+      const img = row && row.querySelector('img[data-testid="entity-image"]');
+      const item = { uri, href: info.href, t: info.t, title, sub: ((subEl && subEl.textContent) || "").trim(), img: (img && img.src) || "" };
+      const old = byUri.get(uri);
+      if (!old) { index.push(item); byUri.set(uri, item); changed++; }
       else if (old.title !== item.title || old.sub !== item.sub || (item.img && old.img !== item.img)) {
         Object.assign(old, item); changed++;
       }
@@ -67,7 +74,7 @@
     return changed;
   }
   function attachNavScan() {
-    const nav = document.querySelector(".Root__nav-bar");
+    const nav = document.querySelector(NAV);
     if (!nav || nav === navEl) return;
     detachNavScan();
     navEl = nav;
@@ -109,7 +116,12 @@
   }
 
   /* ---------- Navigazione ---------- */
-  function go(href) {
+  function go(href, uri) {
+    if (uri) {
+      const t = document.getElementById("listrow-title-" + uri);
+      const btn = t && t.closest('[role="row"]') && t.closest('[role="row"]').querySelector('[role="button"]');
+      if (btn) { btn.click(); return; }
+    }
     const a = [...document.querySelectorAll("a[href]")].find(x => x.getAttribute("href") === href);
     if (a) { a.click(); return; }
     history.pushState({}, "", href);
@@ -130,8 +142,8 @@
     if (deep) return;
     deep = true; deepMsg = "Scansione in corso…"; render();
     try {
-      const nav = document.querySelector(".Root__nav-bar");
-      const first = nav && [...nav.querySelectorAll("a[href]")].find(x => LINK_RE.test(x.getAttribute("href")));
+      const nav = document.querySelector(NAV);
+      const first = nav && nav.querySelector('p[id^="listrow-title-spotify:"]');
       let sc = first;
       while (sc && sc !== nav.parentElement) {
         if (sc.scrollHeight > sc.clientHeight + 8 && /(auto|scroll|hidden)/.test(getComputedStyle(sc).overflowY)) break;
@@ -312,7 +324,7 @@
   }
   function activate(i) {
     const it = items[i]; if (!it) return;
-    if (it.kind === "lib") { closePalette(); go(it.href); return; }
+    if (it.kind === "lib") { closePalette(); go(it.href, it.uri); return; }
     if (!it.keep) closePalette();
     it.run();
   }
